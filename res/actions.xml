@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="ScalaSidekick">
+		<CODE>
+			org.scala.sidekick.ScalaSidekickPlugin.format(view);
+		</CODE>
+	</ACTION>
+</ACTIONS>

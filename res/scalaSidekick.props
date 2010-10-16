@@ -1,0 +1,17 @@
+#general plugin information
+plugin.org.scala.sidekick.ScalaSidekickPlugin.activate=startup
+plugin.org.scala.sidekick.ScalaSidekickPlugin.name=scalaSidekickPlugin
+plugin.org.scala.sidekick.ScalaSidekickPlugin.author=Stefan Ettrup
+plugin.org.scala.sidekick.ScalaSidekickPlugin.version=0.01
+plugin.org.scala.sidekick.ScalaSidekickPlugin.docs=scalaSidekickPlugin.html
+
+#dependencies
+plugin.org.scala.sidekick.ScalaSidekickPlugin.depend.0=jedit 04.03.01.99
+plugin.org.scala.sidekick.ScalaSidekickPlugin.description=ScalaSidekickPlugin implementation
+plugin.org.scala.sidekick.ScalaSidekickPlugin.longdescription=description.html
+
+#menu
+plugin.org.scala.sidekick.ScalaSidekickPlugin.menu=ScalaSidekick
+
+#labels
+ScalaSidekick.label=Format Scala File
