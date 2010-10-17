@@ -11,7 +11,11 @@ Look at the downloads page to see latest release version [download](http://githu
 
 ##Planned
 
-- Change settings for reformat
-- Refactoring
--- Organize imports
--- Implement [Scala Refactoring framework](http://scala-refactoring.org/)
+- Quick Navigation between Traits, Objects and Classes
+- User controlled settings for reformat
+- Refactoring using [Scala Refactoring framework](http://scala-refactoring.org/)
+  - Organize imports
+  - Rename
+  - Inline local
+  - Extract Local
+  - Extract method
