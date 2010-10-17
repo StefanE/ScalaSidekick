@@ -11,7 +11,7 @@ Look at the downloads page to see latest release version [download](http://githu
 
 ##Planned
 
-- Quick Navigation between Traits, Objects and Classes
+- Quick org.scala.sidekick.Navigation between Traits, Objects and Classes
 - Comments
   - Scaladoc for definition on line
   - Insert new Scaladoc comment line

@@ -11,7 +11,9 @@ plugin.org.scala.sidekick.ScalaSidekickPlugin.description=ScalaSidekickPlugin im
 plugin.org.scala.sidekick.ScalaSidekickPlugin.longdescription=description.html
 
 #menu
-plugin.org.scala.sidekick.ScalaSidekickPlugin.menu=ScalaSidekick
+plugin.org.scala.sidekick.ScalaSidekickPlugin.menu=Format Rename OrganizeImports
 
 #labels
-ScalaSidekick.label=Format Scala File
+Format.label=Format Scala File
+Rename.label=Rename
+OrganizeImports.label=Organize Imports

@@ -3,9 +3,19 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
-	<ACTION NAME="ScalaSidekick">
-		<CODE>
-			org.scala.sidekick.ScalaSidekickPlugin.format(view);
-		</CODE>
-	</ACTION>
+    <ACTION NAME="Format">
+        <CODE>
+            org.scala.sidekick.ScalaSidekickPlugin.format(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="Rename">
+        <CODE>
+        org.scala.sidekick.ScalaSidekickPlugin.rename(textArea,view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="OrganizeImports">
+        <CODE>
+        org.scala.sidekick.ScalaSidekickPlugin.organizeImports(textArea);
+        </CODE>
+    </ACTION>
 </ACTIONS>
