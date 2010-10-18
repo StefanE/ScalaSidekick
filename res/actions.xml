@@ -18,4 +18,9 @@
         org.scala.sidekick.ScalaSidekickPlugin.organizeImports(textArea);
         </CODE>
     </ACTION>
+    <ACTION NAME="Navigate">
+        <CODE>
+        org.scala.sidekick.ScalaSidekickPlugin.navigate(view);
+        </CODE>
+    </ACTION>
 </ACTIONS>

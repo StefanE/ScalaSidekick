@@ -16,8 +16,9 @@ object ScalaSidekickPlugin {
   val NAME = "ScalaSidekickPlugin"
 
   //Main only used for testing purpose
-  def main(arg:Array[String]) {
-    System.setProperty( "scala.home", "C:/scala" )
+
+  def main(arg: Array[String]) {
+    System.setProperty("scala.home", "C:/scala")
     val code = """package org.ensime.config
     import java.io.File
     import org.ensime.util._
@@ -34,23 +35,20 @@ object ScalaSidekickPlugin {
     Refactoring.organizeImports(code)
   }
 
-  def format(view:View) {
+  def format(view: View) {
     Reformat.format(view)
   }
 
   def rename(textArea: JEditTextArea, view: View) {
-    Refactoring.rename(textArea,view)
+    Refactoring.rename(textArea, view)
   }
 
   def organizeImports(textArea: JEditTextArea) {
     Refactoring.organizeImports(textArea)
   }
 
-  def navigation(view:View) = {
-    val project = ProjectViewer.getActiveProject(view)
-    val rootPath = project.getRootPath
-    val nodes = JavaConversions.asIterable(project.getOpenableNodes)
-    nodes.foreach(node => println("###:"+node.getNodePath))
+  def navigate(view: View) = {
+    Navigation.createIndex(view)
   }
 
 
@@ -59,5 +57,8 @@ object ScalaSidekickPlugin {
 class ScalaSidekickPlugin extends EBPlugin {
   override def handleMessage(message: EBMessage) {}
 
-  override def start {}
+  override def start {
+    // Scala_Home should be set somewhere if I integrate SIndex it should be solved
+    System.setProperty("scala.home", "C:/scala")
+  }
 }

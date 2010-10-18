@@ -22,3 +22,4 @@ Look at the downloads page to see latest release version [download](http://githu
   - Extract Local
   - Extract method
 - User controlled settings for reformat
+- Integrate and optimize my [SIndex plugin](http://github.com/StefanE/jEdit-with-Scala)
