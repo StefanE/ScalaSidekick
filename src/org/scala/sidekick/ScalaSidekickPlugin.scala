@@ -6,11 +6,15 @@ import scalariform.formatter.ScalaFormatter
 import scalariform.parser.ScalaParserException
 import org.gjt.sp.jedit.textarea.JEditTextArea
 import tools.refactoring.analysis.GlobalIndexes
-import tools.refactoring.util.CompilerProvider
-import tools.refactoring.implementations. {OrganizeImports, Rename}
+import tools.refactoring.implementations.Rename
 import tools.refactoring.common.Change
 import projectviewer. {ProjectViewer, ProjectPlugin}
 import scala.collection.JavaConversions
+import tools.refactoring.util. {CompilerInstance, TreeCreationMethods, CompilerProvider}
+import projectviewer.vpt.VPTNode
+import org.ensime.protocol.message. {GetConnectionInfo, InitProject}
+import org.ensime.client. {ClientReceiver, ClientSender}
+import org.ensime.server.Server
 
 object ScalaSidekickPlugin {
   val NAME = "ScalaSidekickPlugin"
@@ -19,20 +23,20 @@ object ScalaSidekickPlugin {
 
   def main(arg: Array[String]) {
     System.setProperty("scala.home", "C:/scala")
-    val code = """package org.ensime.config
-    import java.io.File
-    import org.ensime.util._
-    import org.ensime.util.FileUtils._
-    import org.ensime.util.RichFile._
-    import org.ensime.util.SExp._
-    import scala.actors._
-    import scala.actors.Actor._
-    import scala.collection.mutable
-    import scalariform.formatter.preferences._
+    Navigation.loadIndex()
 
-    object ProjectConfig {}"""
 
-    Refactoring.organizeImports(code)
+    ClientReceiver.start
+    ClientSender.start
+
+    Server
+
+    ClientSender ! GetConnectionInfo(0)
+    ClientSender ! InitProject("c:/Users/Stefan/Desktop/emacs-23.2/dist", "", "sbt", "d:/ensime/", 0)
+  }
+
+
+  def organizeImports(src: String) {
   }
 
   def format(view: View) {
@@ -43,8 +47,8 @@ object ScalaSidekickPlugin {
     Refactoring.rename(textArea, view)
   }
 
-  def organizeImports(textArea: JEditTextArea) {
-    Refactoring.organizeImports(textArea)
+  def organizeImports(textArea: JEditTextArea, view: View) {
+    Refactoring.organizeImports(textArea, view)
   }
 
   def navigate(view: View) = {
@@ -60,5 +64,15 @@ class ScalaSidekickPlugin extends EBPlugin {
   override def start {
     // Scala_Home should be set somewhere if I integrate SIndex it should be solved
     System.setProperty("scala.home", "C:/scala")
+    Navigation.loadIndex()
+
+
+    ClientReceiver.start
+    ClientSender.start
+
+    Server
+
+    ClientSender ! GetConnectionInfo(0)
+    ClientSender ! InitProject("c:/Users/Stefan/Desktop/emacs-23.2/dist", "", "sbt", "d:/ensime/", 0)
   }
 }

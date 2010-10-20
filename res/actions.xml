@@ -15,7 +15,7 @@
     </ACTION>
     <ACTION NAME="OrganizeImports">
         <CODE>
-        org.scala.sidekick.ScalaSidekickPlugin.organizeImports(textArea);
+        org.scala.sidekick.ScalaSidekickPlugin.organizeImports(textArea, view);
         </CODE>
     </ACTION>
     <ACTION NAME="Navigate">
