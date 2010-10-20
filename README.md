@@ -10,7 +10,7 @@ Look at the downloads page to see latest release version [download](http://githu
 - Reformat scala file using [Scalariform](http://github.com/mdr/scalariform) and defaults
 
 ##Current work
-- Using a customize Ensime Server as backend, a lot of stuff can be reused. If it is a success a lot of the planned features will be included in this implementation
+- Using a customized [Ensime Server](http://github.com/aemoncannon/ensime) as backend, a lot of stuff can be reused. If it is a success a lot of the planned features will be included in this implementation
 
 ##Planned
 
