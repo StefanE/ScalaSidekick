@@ -35,3 +35,6 @@ case class ScopeCompletion(filePath: String, offset: Int, word:String, msgID: In
 case class OrganizeImports(filePath: String, msgID:Int, start:Int, end:Int) extends WireFormat with MessageID{
   def toWireString = toString()
 }
+
+case class ExecRefactoring()
+

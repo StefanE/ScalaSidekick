@@ -25,7 +25,19 @@ object ServerMessageHandler extends Actor {
         case Boolean => {
           println("ok")
         }
-        case other => println("WTF" + other)
+        case SymbolInfoLightMsg(value) => {
+          println(value)
+        }
+        case RefactorResultMsg(value) => {
+          println(value)
+        }
+        case RefactorEffectMsg(value) => {
+          println(value.refactorType.toString)
+        }
+        case RefactorFailureMsg(value) => {
+          println(value)
+        }
+        case other => println("WTF:" + other)
       }
     }
   }
