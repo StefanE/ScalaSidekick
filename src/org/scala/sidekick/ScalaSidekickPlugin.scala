@@ -19,8 +19,14 @@ import org.ensime.server.Server
 object ScalaSidekickPlugin {
   val NAME = "ScalaSidekickPlugin"
 
-  //Main only used for testing purpose
+  private var PROCID = 0
+  private var MSGID = 0
 
+  def procCounter() =  {PROCID += 1;PROCID}
+  def msgCounter() =  {MSGID += 1;MSGID}
+
+  //Main only used for testing purpose
+  //builder-update-files
   def main(arg: Array[String]) {
     System.setProperty("scala.home", "C:/scala")
     Navigation.loadIndex()
@@ -33,6 +39,17 @@ object ScalaSidekickPlugin {
 
     ClientSender ! GetConnectionInfo(0)
     ClientSender ! InitProject("c:/Users/Stefan/Desktop/emacs-23.2/dist", "", "sbt", "d:/ensime/", 0)
+  }
+
+  def initProject(view: View) = {
+    ClientReceiver.start
+    ClientSender.start
+    Server
+
+
+    val projectPath = ProjectViewer.getActiveProject(view).getRootPath
+    ClientSender ! GetConnectionInfo(0)
+    ClientSender ! InitProject("c:/Users/Stefan/Desktop/emacs-23.2/dist", "", "sbt", projectPath, msgCounter())
   }
 
 
@@ -65,14 +82,5 @@ class ScalaSidekickPlugin extends EBPlugin {
     // Scala_Home should be set somewhere if I integrate SIndex it should be solved
     System.setProperty("scala.home", "C:/scala")
     Navigation.loadIndex()
-
-
-    ClientReceiver.start
-    ClientSender.start
-
-    Server
-
-    ClientSender ! GetConnectionInfo(0)
-    ClientSender ! InitProject("c:/Users/Stefan/Desktop/emacs-23.2/dist", "", "sbt", "d:/ensime/", 0)
   }
 }

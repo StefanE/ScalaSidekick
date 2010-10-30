@@ -8,7 +8,10 @@ object ClientReceiver extends Actor {
   def act() {
     loop {
       react {
-        case msg: WireFormat => ServerMessageHandler ! msg
+        case msg: WireFormat => {
+          println("###Receiving:"+msg)
+          ServerMessageHandler ! msg
+        }
         case other => println("WTF:"+other)
       }
     }
@@ -19,7 +22,10 @@ object ClientSender extends Actor {
   def act() {
     loop {
       react {
-        case msg: WireFormat => ServerReceiver ! msg
+        case msg: WireFormat => {
+          println("###SENDING:"+msg)
+          ServerReceiver ! msg
+        }
         case other => println("ERROR at ClientSender")
       }
     }

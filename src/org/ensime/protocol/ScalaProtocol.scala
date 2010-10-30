@@ -9,6 +9,7 @@ import org.ensime.util._
 import scala.actors._
 import org.ensime.protocol.message._
 import org.ensime.client._
+import org.scala.sidekick.ScalaSidekickPlugin._
 
 object ScalaProtocol extends ScalaProtocol {}
 
@@ -58,11 +59,17 @@ trait ScalaProtocol extends Protocol {
       case ScopeCompletion(file, offset, word, id) => {
         rpcTarget.rpcScopeCompletion(file, offset, word, false, id)
       }
-      case OrganizeImports(file,id,start,end) => {
-        rpcTarget.rpcPerformRefactor(Symbol("organizeImports"), id,
+      case OrganizeImports(file,procId,id,start,end) => {
+        rpcTarget.rpcPerformRefactor(Symbol("organizeImports"), procId,
           Map(Symbol("file")->file,
             Symbol("start")->start,
             Symbol("end")->end),id)
+      }
+      case ExecRefactoring(name,procId,id) => {
+        rpcTarget.rpcExecRefactor(Symbol(name), procId, id)
+      }
+      case TypecheckFile(path,id) => {
+        rpcTarget.rpcTypecheckFile(path, id)
       }
       case other => println("###ERROR WRONG MESSAGE :" + other)
     }

@@ -24,8 +24,6 @@ object Navigation {
   def navigateTo(view: View) {
     if (!indexLoaded)
       createIndex(view)
-
-
   }
 
   def createIndex(view: View) {
@@ -64,8 +62,6 @@ object Navigation {
     saveIndex()
     indexLoaded = true
     println("###:Created index in:" + (end - start))
-    println("###" + index)
-
   }
 
   private def saveIndex() {

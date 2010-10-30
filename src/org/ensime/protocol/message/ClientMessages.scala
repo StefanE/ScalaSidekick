@@ -32,9 +32,14 @@ case class ScopeCompletion(filePath: String, offset: Int, word:String, msgID: In
   def toWireString = toString()
 }
 
-case class OrganizeImports(filePath: String, msgID:Int, start:Int, end:Int) extends WireFormat with MessageID{
+case class OrganizeImports(filePath: String, procID:Int, msgID:Int, start:Int, end:Int) extends WireFormat with MessageID{
   def toWireString = toString()
 }
 
-case class ExecRefactoring()
+case class ExecRefactoring(name:String,procID:Int, msgID:Int) extends WireFormat with MessageID {
+  def toWireString = toString()
+}
 
+case class TypecheckFile(path:String, msgID: Int) extends WireFormat with MessageID {
+  def toWireString = toString()
+} 

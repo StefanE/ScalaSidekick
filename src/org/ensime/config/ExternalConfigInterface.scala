@@ -142,6 +142,7 @@ object ExternalConfigInterface {
       val target = if (f.exists) { Some(toCanonFile(f)) } else { None }
       ExternalConfig(srcDirs, runtimeDeps, compileDeps, testDeps, target)
     } else {
+      System.err.println("###"+baseDir)
       System.err.println("Could not locate build.properties file!")
       ExternalConfig(srcDirs, List(), List(), List(), None)
     }

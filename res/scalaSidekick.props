@@ -12,10 +12,11 @@ plugin.org.scala.sidekick.ScalaSidekickPlugin.description=ScalaSidekickPlugin im
 plugin.org.scala.sidekick.ScalaSidekickPlugin.longdescription=description.html
 
 #menu
-plugin.org.scala.sidekick.ScalaSidekickPlugin.menu=Format Rename OrganizeImports Navigate
+plugin.org.scala.sidekick.ScalaSidekickPlugin.menu=Init Format Rename OrganizeImports Navigate
 
 #labels
 Format.label=Format Scala File
 Rename.label=Rename
 OrganizeImports.label=Organize Imports
 Navigate.label=Build Index
+Init.label=Init Project

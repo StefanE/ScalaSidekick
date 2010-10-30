@@ -23,4 +23,9 @@
         org.scala.sidekick.ScalaSidekickPlugin.navigate(view);
         </CODE>
     </ACTION>
+    <ACTION NAME="Init">
+        <CODE>
+        org.scala.sidekick.ScalaSidekickPlugin.initProject(view);
+        </CODE>
+    </ACTION>
 </ACTIONS>

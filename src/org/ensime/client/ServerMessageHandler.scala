@@ -2,6 +2,8 @@ package org.ensime.client
 
 import actors.Actor
 import org.ensime.protocol.message._
+import org.ensime.server.RefactorEffect
+import org.scala.sidekick.ScalaSidekickPlugin
 
 object ServerMessageHandler extends Actor {
   def act() {
@@ -12,12 +14,9 @@ object ServerMessageHandler extends Actor {
         }
         case CompilerReady => {
           println("Compiler Ready")
-          //ClientSender ! org.ensime.protocol.message.TypeAtPoint("D:/ensime/src/main/scala/org/ensime/protocol/SwankProtocol.scala",1302,0)
         }
         case result:TypeCheckResult => {
           println(result)
-          //ClientSender ! org.ensime.protocol.message.ScopeCompletion("D:/ensime/src/main/scala/org/ensime/protocol/swankprotocol.scala", 1365, "", 0)
-          ClientSender ! OrganizeImports("D:\\ensime\\src\\main\\scala\\org\\ensime\\util\\Note.scala",1,1,1318)
         }
         case bgMsg:BackgroundMessage => {
           println("bgMSG:" + bgMsg)
@@ -29,16 +28,27 @@ object ServerMessageHandler extends Actor {
           println(value)
         }
         case RefactorResultMsg(value) => {
-          println(value)
+          println("RefactorResult:"+value.touched)
+          Global.currentBuffer.reload(Global.currentView)
+          Global.currentBuffer.autosave()
         }
-        case RefactorEffectMsg(value) => {
-          println(value.refactorType.toString)
-        }
+        case RefactorEffectMsg(value) => handleRefactoring(value)
         case RefactorFailureMsg(value) => {
-          println(value)
+          println("Failure:"+value)
         }
         case other => println("WTF:" + other)
       }
+    }
+  }
+  
+  private def handleRefactoring(effect:RefactorEffect) {
+    effect.refactorType.toString match {
+      case "'organizeImports" => {
+        println("###Text:"+effect.changes.mkString)
+        ClientSender ! ExecRefactoring("organizeImports",effect.procedureId,ScalaSidekickPlugin.msgCounter)
+        println("###Exec")
+      }
+      case other => println("Uknown refactor:"+other)
     }
   }
 
