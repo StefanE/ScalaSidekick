@@ -9,46 +9,49 @@ object ServerMessageHandler extends Actor {
   def act() {
     loop{
       react{
-        case info:ConnectionInfo => {
+        case info: ConnectionInfo => {
           println("INFOR:" + info)
         }
-        case CompilerReady => {
-          println("Compiler Ready")
+        case CompilerReady() => {
+          Global.initialized=true
+          println("Compiler Ready:"+Global.initialized)
         }
-        case result:TypeCheckResult => {
+        case result: TypeCheckResult => {
           println(result)
         }
-        case bgMsg:BackgroundMessage => {
+        case bgMsg: BackgroundMessage => {
           println("bgMSG:" + bgMsg)
-        }
-        case Boolean => {
-          println("ok")
         }
         case SymbolInfoLightMsg(value) => {
           println(value)
         }
         case RefactorResultMsg(value) => {
-          println("RefactorResult:"+value.touched)
+          println("RefactorResult:" + value.touched)
           Global.currentBuffer.reload(Global.currentView)
-          Global.currentBuffer.autosave()
+          //Global.currentBuffer.autosave()
         }
         case RefactorEffectMsg(value) => handleRefactoring(value)
         case RefactorFailureMsg(value) => {
-          println("Failure:"+value)
+          println("Failure:" + value)
+        }
+        case BooleanMsg(value) => {
+          if(Global.currentBuffer!=null)
+            Global.currentBuffer.reload(Global.currentView)
+            //Global.currentBuffer.autosave()
         }
         case other => println("WTF:" + other)
       }
     }
   }
-  
-  private def handleRefactoring(effect:RefactorEffect) {
+
+  private def handleRefactoring(effect: RefactorEffect) {
     effect.refactorType.toString match {
       case "'organizeImports" => {
-        println("###Text:"+effect.changes.mkString)
-        ClientSender ! ExecRefactoring("organizeImports",effect.procedureId,ScalaSidekickPlugin.msgCounter)
+        println("###Text:" + effect.changes.mkString)
+        ClientSender ! ExecRefactoring("organizeImports", effect.procedureId, ScalaSidekickPlugin.msgCounter)
         println("###Exec")
       }
-      case other => println("Uknown refactor:"+other)
+      case other => println("Uknown refactor:" + other)
     }
   }
 

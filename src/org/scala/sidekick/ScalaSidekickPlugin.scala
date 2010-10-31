@@ -1,6 +1,5 @@
 package org.scala.sidekick
 
-import org.gjt.sp.jedit. {View, EBMessage, EBPlugin}
 import scalariform.formatter.preferences.FormattingPreferences
 import scalariform.formatter.ScalaFormatter
 import scalariform.parser.ScalaParserException
@@ -13,8 +12,9 @@ import scala.collection.JavaConversions
 import tools.refactoring.util. {CompilerInstance, TreeCreationMethods, CompilerProvider}
 import projectviewer.vpt.VPTNode
 import org.ensime.protocol.message. {GetConnectionInfo, InitProject}
-import org.ensime.client. {ClientReceiver, ClientSender}
 import org.ensime.server.Server
+import org.gjt.sp.jedit.{GUIUtilities, View, EBMessage, EBPlugin}
+import org.ensime.client.{Global, ClientReceiver, ClientSender}
 
 object ScalaSidekickPlugin {
   val NAME = "ScalaSidekickPlugin"
@@ -49,27 +49,38 @@ object ScalaSidekickPlugin {
 
     val projectPath = ProjectViewer.getActiveProject(view).getRootPath
     ClientSender ! GetConnectionInfo(0)
-    ClientSender ! InitProject("c:/Users/Stefan/Desktop/emacs-23.2/dist", "", "sbt", projectPath, msgCounter())
-  }
-
-
-  def organizeImports(src: String) {
+    ClientSender ! InitProject("XXX", "", "sbt", projectPath, msgCounter())
   }
 
   def format(view: View) {
+    isInitialized(view)
     Reformat.format(view)
   }
 
   def rename(textArea: JEditTextArea, view: View) {
-    Refactoring.rename(textArea, view)
+    isInitialized(view)
+    //Refactoring.rename(textArea, view)
   }
 
   def organizeImports(textArea: JEditTextArea, view: View) {
+    isInitialized(view)
     Refactoring.organizeImports(textArea, view)
   }
 
   def navigate(view: View) = {
     Navigation.createIndex(view)
+  }
+
+  private def isInitialized(view: View) = {
+    if(Global.initialized){
+        true
+    }
+    else {
+      val projectRoot = ProjectViewer.getActiveProject(view).getRootPath
+      val arr = Array[AnyRef](projectRoot)
+      GUIUtilities.error(null, "error.noInit", arr)
+    }
+
   }
 
 

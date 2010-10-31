@@ -12,7 +12,7 @@ plugin.org.scala.sidekick.ScalaSidekickPlugin.description=ScalaSidekickPlugin im
 plugin.org.scala.sidekick.ScalaSidekickPlugin.longdescription=description.html
 
 #menu
-plugin.org.scala.sidekick.ScalaSidekickPlugin.menu=Init Format Rename OrganizeImports Navigate
+plugin.org.scala.sidekick.ScalaSidekickPlugin.menu=Init Format Rename OrganizeImports
 
 #labels
 Format.label=Format Scala File
@@ -20,3 +20,15 @@ Rename.label=Rename
 OrganizeImports.label=Organize Imports
 Navigate.label=Build Index
 Init.label=Init Project
+
+#info
+# argument {0}
+error.noSBT.title=No SBT
+error.noSBT.message=ProjectViewer project is not a SBT project error: "{0}"
+
+error.noInit.title=Not Initialized
+error.noInit.message=The SBT project with rootPath {0} has not been initialized
+
+error.noRefactor.title=Refactor Error
+error.noRefactor.message=The {0} refactoring failed, because of: "{1}"
+

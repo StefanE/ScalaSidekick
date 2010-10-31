@@ -42,4 +42,8 @@ case class ExecRefactoring(name:String,procID:Int, msgID:Int) extends WireFormat
 
 case class TypecheckFile(path:String, msgID: Int) extends WireFormat with MessageID {
   def toWireString = toString()
-} 
+}
+
+case class ReformatFile(path:String, msgID: Int) extends WireFormat with MessageID {
+  def toWireString = toString()
+}

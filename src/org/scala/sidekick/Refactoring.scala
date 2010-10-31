@@ -47,7 +47,6 @@ object Refactoring {
     var msgId = ScalaSidekickPlugin.msgCounter
     val procId = ScalaSidekickPlugin.procCounter
     //TODO: Workaround?
-    Global.relatedNumber = msgId
     ClientSender ! TypecheckFile(path,msgId)
     msgId = ScalaSidekickPlugin.msgCounter
     Thread.sleep(100)
@@ -58,39 +57,4 @@ object Refactoring {
     Global.currentView = view
     Global.currentBuffer = view.getBuffer
   }
-
-  /*
-  def organizeImports(editor: JEditTextArea) {
-    val src = editor.getText
-    val refactoring = new OrganizeImports with CompilerProvider{
-      val ast = treeFrom(src)
-    }
-
-    val selection = refactoring.TreeSelection(refactoring.ast)
-    val changes =
-      refactoring.perform(selection, new refactoring.PreparationResult, new refactoring.RefactoringParameters) match {
-      case Left(refactoring.RefactoringError(error)) =>
-        println(error)
-        return
-      case Right(r) => r
-    }
-
-    editor setText Change.applyChanges(changes, src)
-  }
-
-  def organizeImports(src: String) {
-    val refactoring = new OrganizeImports with CompilerProvider{
-      val ast = treeFrom(src)
-    }
-
-    val selection = refactoring.TreeSelection(refactoring.ast)
-    val changes =
-      refactoring.perform(selection, new refactoring.PreparationResult, new refactoring.RefactoringParameters) match {
-      case Left(refactoring.RefactoringError(error)) =>
-        println(error)
-        return
-      case Right(r) => r
-    }
-
-  }     */
 }

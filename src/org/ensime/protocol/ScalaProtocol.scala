@@ -71,6 +71,11 @@ trait ScalaProtocol extends Protocol {
       case TypecheckFile(path,id) => {
         rpcTarget.rpcTypecheckFile(path, id)
       }
+      case ReformatFile(path,id) => {
+        val iter = Iterable(path)
+        rpcTarget.rpcFormatFiles(iter,id)
+
+      }
       case other => println("###ERROR WRONG MESSAGE :" + other)
     }
   }

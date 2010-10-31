@@ -17,7 +17,7 @@ object ProjectConfig {
   def apply(msg:InitProject): ProjectConfig = {
     import ExternalConfigInterface._
     println("ROOTDIR:"+msg.rootDir)
-    val rootDir = CanonFile(new File(msg.rootDir))  
+    val rootDir = CanonFile(new File(msg.rootDir))
     
     val sourceRoots = new mutable.HashSet[CanonFile]
     val runtimeDeps = new mutable.HashSet[CanonFile]
