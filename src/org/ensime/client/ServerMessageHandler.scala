@@ -51,6 +51,11 @@ object ServerMessageHandler extends Actor {
         ClientSender ! ExecRefactoring("organizeImports", effect.procedureId, ScalaSidekickPlugin.msgCounter)
         println("###Exec")
       }
+        case "'rename" => {
+        println("###Text:" + effect.changes.mkString)
+        ClientSender ! ExecRefactoring("rename", effect.procedureId, ScalaSidekickPlugin.msgCounter)
+        println("###Exec")
+      }
       case other => println("Uknown refactor:" + other)
     }
   }

@@ -21,8 +21,12 @@ OrganizeImports.label=Organize Imports
 Navigate.label=Build Index
 Init.label=Init Project
 
-#info
+#info/Error
 # argument {0}
+
+info.rename.title=Rename to...
+info.rename.message=Enter new name to refactor
+
 error.noSBT.title=No SBT
 error.noSBT.message=ProjectViewer project is not a SBT project error: "{0}"
 

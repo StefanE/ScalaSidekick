@@ -36,6 +36,10 @@ case class OrganizeImports(filePath: String, procID:Int, msgID:Int, start:Int, e
   def toWireString = toString()
 }
 
+case class Rename(filePath: String, procID:Int, msgID:Int, start:Int, end: Int, nName: String) extends WireFormat with MessageID{
+  def toWireString = toString()
+}
+
 case class ExecRefactoring(name:String,procID:Int, msgID:Int) extends WireFormat with MessageID {
   def toWireString = toString()
 }

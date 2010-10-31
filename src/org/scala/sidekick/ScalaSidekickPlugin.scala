@@ -59,7 +59,7 @@ object ScalaSidekickPlugin {
 
   def rename(textArea: JEditTextArea, view: View) {
     isInitialized(view)
-    //Refactoring.rename(textArea, view)
+    Refactoring.rename(textArea, view)
   }
 
   def organizeImports(textArea: JEditTextArea, view: View) {

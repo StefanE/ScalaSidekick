@@ -65,6 +65,13 @@ trait ScalaProtocol extends Protocol {
             Symbol("start")->start,
             Symbol("end")->end),id)
       }
+      case Rename(file,procId,id,start,end,newName) => {
+        rpcTarget.rpcPerformRefactor(Symbol("rename"), procId,
+          Map(Symbol("file")->file,
+            Symbol("start")->start,
+            Symbol("end")->end,
+            Symbol("newName")->newName),id)
+      }
       case ExecRefactoring(name,procId,id) => {
         rpcTarget.rpcExecRefactor(Symbol(name), procId, id)
       }

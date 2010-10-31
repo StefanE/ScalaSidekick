@@ -3,38 +3,29 @@ package org.scala.sidekick
 import tools.refactoring.analysis.GlobalIndexes
 import tools.refactoring.util.CompilerProvider
 import org.gjt.sp.jedit.textarea.JEditTextArea
-import org.gjt.sp.jedit. {View, Buffer}
 import tools.refactoring.implementations. {OrganizeImports, Rename}
 import java.io.File
-import org.ensime.protocol.message.{TypecheckFile, OrganizeImports}
 import org.ensime.client.{Global, ClientSender}
+import org.ensime.protocol.message.{Rename, TypecheckFile, OrganizeImports}
+import org.gjt.sp.jedit.{GUIUtilities, View, Buffer}
 
 object Refactoring {
 
   def rename(editor: JEditTextArea, view: View) {
+    val newName = GUIUtilities.input(null,"info.rename",null)
+
     setCurrent(editor,view)
     val buffer = view.getBuffer
-    val length = buffer.getLength
-    val codeText = buffer.getText(0, length)
+    val path = buffer.getPath
 
-    val refactoring =
-      new Rename with CompilerProvider with GlobalIndexes {
-        val ast = treeFrom(codeText)
-        val index = GlobalIndex(ast)
-      }
+    val select = editor.getSelection(0)
+    val start = select.getStart
+    val end = select.getEnd
+    val procID = ScalaSidekickPlugin.procCounter
+    val msgID = ScalaSidekickPlugin.msgCounter
 
-    val selected = editor.getSelection(0)
-    val selection: refactoring.Selection = {
-      val file = refactoring.ast.pos.source.file
-      val from = selected.getStart
-      val to = selected.getEnd
-      new refactoring.FileSelection(file, from, to)
-    }
+    ClientSender ! Rename(path,procID,msgID,start,end,newName)
 
-    val preparationResult = refactoring.prepare(selection) match {
-      case Left(refactoring.PreparationError(error)) => {println(error);  () }
-      case Right(r) => r
-    }
   }
 
 
