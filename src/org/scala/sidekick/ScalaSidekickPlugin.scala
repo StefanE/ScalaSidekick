@@ -53,18 +53,18 @@ object ScalaSidekickPlugin {
   }
 
   def format(view: View) {
-    isInitialized(view)
-    Reformat.format(view)
+    if(isInitialized(view))
+      Reformat.format(view)
   }
 
   def rename(textArea: JEditTextArea, view: View) {
-    isInitialized(view)
-    Refactoring.rename(textArea, view)
+    if(isInitialized(view))
+      Refactoring.rename(textArea, view)
   }
 
   def organizeImports(textArea: JEditTextArea, view: View) {
-    isInitialized(view)
-    Refactoring.organizeImports(textArea, view)
+    if(isInitialized(view))
+      Refactoring.organizeImports(textArea, view)
   }
 
   def navigate(view: View) = {
