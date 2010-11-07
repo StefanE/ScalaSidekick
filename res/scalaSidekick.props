@@ -8,11 +8,12 @@ plugin.org.scala.sidekick.ScalaSidekickPlugin.docs=scalaSidekickPlugin.html
 #dependencies
 plugin.org.scala.sidekick.ScalaSidekickPlugin.depend.0=jedit 04.03.01.99
 plugin.org.scala.sidekick.ScalaSidekickPlugin.depend.1=optional plugin projectviewer.ProjectViewerPlugin 3.0.1
+#Add dependencies later
 plugin.org.scala.sidekick.ScalaSidekickPlugin.description=ScalaSidekickPlugin implementation
 plugin.org.scala.sidekick.ScalaSidekickPlugin.longdescription=description.html
 
 #menu
-plugin.org.scala.sidekick.ScalaSidekickPlugin.menu=Init Format Rename OrganizeImports
+plugin.org.scala.sidekick.ScalaSidekickPlugin.menu=Init Format Rename OrganizeImports Completion ShowType
 
 #labels
 Format.label=Format Scala File
@@ -20,12 +21,17 @@ Rename.label=Rename
 OrganizeImports.label=Organize Imports
 Navigate.label=Build Index
 Init.label=Init Project
+Completion.label=Completion
+ShowType.label=Show Type
 
 #info/Error
 # argument {0}
 
 info.rename.title=Rename to...
 info.rename.message=Enter new name to refactor
+
+info.typeInfo.title=Type is
+info.typeInfo.message={0}
 
 error.noSBT.title=No SBT
 error.noSBT.message=ProjectViewer project is not a SBT project error: "{0}"

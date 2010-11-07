@@ -4,6 +4,7 @@ import actors.Actor
 import org.ensime.protocol.message._
 import org.ensime.server.RefactorEffect
 import org.scala.sidekick.ScalaSidekickPlugin
+import org.ensime.model.NamedTypeMemberInfoLight
 
 object ServerMessageHandler extends Actor {
   def act() {
@@ -13,8 +14,8 @@ object ServerMessageHandler extends Actor {
           println("INFOR:" + info)
         }
         case CompilerReady() => {
-          Global.initialized=true
-          println("Compiler Ready:"+Global.initialized)
+          Global.initialized = true
+          println("Compiler Ready:" + Global.initialized)
         }
         case result: TypeCheckResult => {
           println(result)
@@ -35,9 +36,29 @@ object ServerMessageHandler extends Actor {
           println("Failure:" + value)
         }
         case BooleanMsg(value) => {
-          if(Global.currentBuffer!=null)
+          if (Global.currentBuffer != null)
             Global.currentBuffer.reload(Global.currentView)
-            //Global.currentBuffer.autosave()
+          //Global.currentBuffer.autosave()
+        }
+        case Container(value, id) => {
+          
+          val action = Global.actions.remove(id).getOrElse(null)
+          if (action != null) {
+            value match {
+              case IterableValues(values) => {
+                val sList: List[String] = (for (member <- values) yield member.toWireString).toList
+                action(sList)
+              }
+              case TypeInfoMsg(value) => {
+                val sList = List(value.fullName)
+                action(sList)
+              }
+              case other => ()
+            }
+          }
+        }
+        case IterableValues(list) => {
+          //Global.actions.remove(1)
         }
         case other => println("WTF:" + other)
       }
@@ -51,7 +72,7 @@ object ServerMessageHandler extends Actor {
         ClientSender ! ExecRefactoring("organizeImports", effect.procedureId, ScalaSidekickPlugin.msgCounter)
         println("###Exec")
       }
-        case "'rename" => {
+      case "'rename" => {
         println("###Text:" + effect.changes.mkString)
         ClientSender ! ExecRefactoring("rename", effect.procedureId, ScalaSidekickPlugin.msgCounter)
         println("###Exec")

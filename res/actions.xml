@@ -13,6 +13,16 @@
         org.scala.sidekick.ScalaSidekickPlugin.rename(textArea,view);
         </CODE>
     </ACTION>
+    <ACTION NAME="Completion">
+        <CODE>
+        org.scala.sidekick.ScalaSidekickPlugin.complete(textArea,view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="ShowType">
+        <CODE>
+        org.scala.sidekick.ScalaSidekickPlugin.getType(textArea,view);
+        </CODE>
+    </ACTION>
     <ACTION NAME="OrganizeImports">
         <CODE>
         org.scala.sidekick.ScalaSidekickPlugin.organizeImports(textArea, view);

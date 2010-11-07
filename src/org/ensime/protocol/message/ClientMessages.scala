@@ -27,7 +27,7 @@ case class TypeCompletion(filePath: String, offset: Int, word:String, msgID: Int
   def toWireString = toString()
 }
 
-case class ScopeCompletion(filePath: String, offset: Int, word:String, msgID: Int)
+case class ScopeCompletion(filePath: String, offset: Int, word:String, constructor:Boolean, msgID: Int)
         extends WireFormat with MessageID{
   def toWireString = toString()
 }

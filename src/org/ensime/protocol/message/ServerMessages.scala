@@ -32,7 +32,11 @@ case class ConnectionInfo(protocol: String, srvName: String, msgID: Int)
 }
 
 case class SymbolInfoLightMsg(value: SymbolInfoLight) extends WireFormat {
-  def toWireString = toString()
+  def toWireString = value.name+" Sig: "+value.tpeSig 
+}
+
+case class NamedTypeMemberInfoLightMsg(value: NamedTypeMemberInfoLight) extends WireFormat {
+  def toWireString = value.name+" Sig: "+value.tpeSig
 }
 
 case class RefactorResultMsg(value: RefactorResult) extends WireFormat {
@@ -75,9 +79,7 @@ case class NamedTypeMemberInfoMsg(value: NamedTypeMemberInfo) extends WireFormat
   def toWireString = toString()
 }
 
-case class NamedTypeMemberInfoLightMsg(value: NamedTypeMemberInfoLight) extends WireFormat {
-  def toWireString = toString()
-}
+
 
 case class SymbolInfoMsg(value: SymbolInfo) extends WireFormat {
   def toWireString = toString()
@@ -109,4 +111,8 @@ case class ReplConfigMsg(value: ReplConfig) extends WireFormat {
 
 case class IterableValues(values:Iterable[WireFormat]) extends WireFormat {
   def toWireString = toString()
+}
+
+case class Container(value:WireFormat,id:Int) extends WireFormat {
+  def toWireString() = ""+id
 }

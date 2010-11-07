@@ -56,8 +56,8 @@ trait ScalaProtocol extends Protocol {
       case TypeCompletion(file, offset, word, id) => {
         rpcTarget.rpcTypeCompletion(file, offset, word, id)
       }
-      case ScopeCompletion(file, offset, word, id) => {
-        rpcTarget.rpcScopeCompletion(file, offset, word, false, id)
+      case ScopeCompletion(file,offset,word,constructor,id) => {
+        rpcTarget.rpcScopeCompletion(file, offset, word, constructor, id)
       }
       case OrganizeImports(file,procId,id,start,end) => {
         rpcTarget.rpcPerformRefactor(Symbol("organizeImports"), procId,
@@ -96,7 +96,7 @@ trait ScalaProtocol extends Protocol {
   }
 
   def sendRPCReturn(value: WireFormat, callId: Int) {
-    sendMessage(value)
+    sendMessage(Container(value,callId))
   }
 
   def sendRPCError(msg: String, callId: Int) {
