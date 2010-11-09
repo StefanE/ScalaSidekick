@@ -18,6 +18,9 @@ Look at the downloads page to see latest release version [download](http://githu
 ##Current work
 - Using a customized [Ensime Server](http://github.com/aemoncannon/ensime) as backend, a lot of stuff can be reused. If it is a success a lot of the planned features will be included in this implementation
 
+##Known bugs
+- Problems with autocompletion of imports...
+
 ##Planned
 
 - Quick Navigation between Traits, Objects and Classes
@@ -31,6 +34,7 @@ Look at the downloads page to see latest release version [download](http://githu
 - User controlled settings for reformat
 - Integrate and optimize my [SIndex plugin](http://github.com/StefanE/jEdit-with-Scala)
 - Nice GUI configuration
+- Nicer Menu
 
 ## How to use it
 

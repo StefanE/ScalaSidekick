@@ -13,7 +13,7 @@ plugin.org.scala.sidekick.ScalaSidekickPlugin.description=ScalaSidekickPlugin im
 plugin.org.scala.sidekick.ScalaSidekickPlugin.longdescription=description.html
 
 #menu
-plugin.org.scala.sidekick.ScalaSidekickPlugin.menu=Init Format Rename OrganizeImports Completion ShowType
+plugin.org.scala.sidekick.ScalaSidekickPlugin.menu=Init - Format Rename OrganizeImports - Completion ShowType
 
 #labels
 Format.label=Format Scala File
@@ -33,11 +33,15 @@ info.rename.message=Enter new name to refactor
 info.typeInfo.title=Type is
 info.typeInfo.message={0}
 
+info.init.confirm.title=Confirm project path
+info.init.confirm.message=Project will be initialized with the following path. Change if you want another path.
+
+
 error.noSBT.title=No SBT
 error.noSBT.message=ProjectViewer project is not a SBT project error: "{0}"
 
 error.noInit.title=Not Initialized
-error.noInit.message=The SBT project with rootPath {0} has not been initialized
+error.noInit.message=The SBT project with path "{0}" has not been initialized
 
 error.noRefactor.title=Refactor Error
 error.noRefactor.message=The {0} refactoring failed, because of: "{1}"
