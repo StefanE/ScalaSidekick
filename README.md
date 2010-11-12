@@ -19,7 +19,7 @@ Look at the downloads page to see latest release version [download](http://githu
 - Get Type info
 - Find definition
 
-# Misc
+### Misc
 - Exact navigation (Enter name on class,object or trait). Should be improved to look more like OpenIt.
 
 ##Current work
