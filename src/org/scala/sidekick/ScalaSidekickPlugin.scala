@@ -15,6 +15,7 @@ import projectviewer.{ProjectManager, ProjectViewer}
 import projectviewer.event.ProjectUpdate
 import projectviewer.vpt.{VPTFile, VPTNode}
 import org.gjt.sp.jedit.msg.VFSUpdate
+import errorlist.{ErrorSource, DefaultErrorSource}
 
 object ScalaSidekickPlugin {
   val NAME = "ScalaSidekickPlugin"
@@ -37,7 +38,7 @@ object ScalaSidekickPlugin {
 
     if (Global.initialized) {
       ClientSender ! InitProject("c:/Users/Stefan/Desktop/emacs-23.2/dist", "", "sbt", projectPath, msgCounter())
-      GUIUtilities.message(null,"info.restarting",null)
+      GUIUtilities.message(null, "info.restarting", null)
       Global.initialized = false
     }
     else {
@@ -49,9 +50,9 @@ object ScalaSidekickPlugin {
 
       ClientSender ! GetConnectionInfo(0)
       ClientSender ! InitProject("c:/Users/Stefan/Desktop/emacs-23.2/dist", "", "sbt", projectPath, msgCounter())
+
+      Navigation.createIndex(view)
     }
-
-
   }
 
   def format(view: View) {
@@ -90,6 +91,11 @@ object ScalaSidekickPlugin {
       Navigation.gotoDefinition(textArea, view)
   }
 
+  def typeCheckProject(textArea: JEditTextArea, view: View) {
+    clearErrors()
+    ClientSender ! TypecheckAll(msgCounter())
+  }
+
   def Initialized(view: View) = {
     if (Global.initialized) {
       true
@@ -100,6 +106,13 @@ object ScalaSidekickPlugin {
       GUIUtilities.error(null, "error.noInit", arr)
       false
     }
+  }
+
+  def clearErrors() {
+    val arr = ErrorSource.getErrorSources
+    arr.foreach(e => {
+      ErrorSource.unregisterErrorSource(e)
+    })
   }
 }
 
@@ -117,10 +130,13 @@ class ScalaSidekickPlugin extends EBPlugin {
           })
         }
       }
-      case e:VFSUpdate => {
+      case e: VFSUpdate => {
         val path = e.getPath
-        if(path.endsWith(".scala"))
-          ClientSender !  TypecheckFile(path, ScalaSidekickPlugin.msgCounter())
+        if (path.endsWith(".scala") && Navigation.index.exists(_.path.equalsIgnoreCase(path))) {
+          ScalaSidekickPlugin.clearErrors()
+          ClientSender ! TypecheckFile(path, ScalaSidekickPlugin.msgCounter())
+        }
+         
       }
       case other => println(other)
     }
@@ -129,6 +145,7 @@ class ScalaSidekickPlugin extends EBPlugin {
 
   override def start {
     Navigation.loadIndex()
+
   }
 }
 

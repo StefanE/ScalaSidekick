@@ -43,4 +43,9 @@
         org.scala.sidekick.ScalaSidekickPlugin.toDefinition(textArea,view);
         </CODE>
     </ACTION>
+    <ACTION NAME="TypeCheckProject">
+        <CODE>
+        org.scala.sidekick.ScalaSidekickPlugin.typeCheckProject(textArea,view);
+        </CODE>
+    </ACTION>
 </ACTIONS>

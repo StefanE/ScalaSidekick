@@ -13,7 +13,7 @@ plugin.org.scala.sidekick.ScalaSidekickPlugin.description=ScalaSidekickPlugin im
 plugin.org.scala.sidekick.ScalaSidekickPlugin.longdescription=description.html
 
 #menu
-plugin.org.scala.sidekick.ScalaSidekickPlugin.menu=Init - Format Rename OrganizeImports - Completion ShowType ToDefinition Navigate
+plugin.org.scala.sidekick.ScalaSidekickPlugin.menu=Init - Format Rename OrganizeImports - Completion ShowType ToDefinition Navigate - TypeCheckProject
 
 #labels
 Format.label=Format Scala File
@@ -25,6 +25,7 @@ Completion.label=Completion
 ShowType.label=Show Type
 #Should find a better name
 ToDefinition.label=Find Definition
+TypeCheckProject.label=Type Check Project
 
 #info/Error
 # argument {0}

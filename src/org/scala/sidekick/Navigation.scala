@@ -23,11 +23,10 @@ object Navigation {
 
   var projectNodes = Iterable[VPTNode]()
   var indexLoaded = false
-  private var index = List[IndexEntry]()
+  var index = List[IndexEntry]()
 
   def navigateTo(view: View) {
-    if (!indexLoaded)
-      createIndex(view)
+    createIndex(view)
 
     val request = GUIUtilities.input(null,"info.goto",null)
     val elemList = index.filter(e => e.name == request)

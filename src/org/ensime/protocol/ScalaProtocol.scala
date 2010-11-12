@@ -75,6 +75,9 @@ trait ScalaProtocol extends Protocol {
       case TypecheckFile(path,id) => {
         rpcTarget.rpcTypecheckFile(path, id)
       }
+      case TypecheckAll(id) => {
+        rpcTarget.rpcTypecheckAll(id)
+      }
       case ReformatFile(path,id) => {
         val iter = Iterable(path)
         rpcTarget.rpcFormatFiles(iter,id)

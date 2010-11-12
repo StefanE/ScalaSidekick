@@ -5,6 +5,7 @@ import org.ensime.protocol.message._
 import org.ensime.server.RefactorEffect
 import org.scala.sidekick.ScalaSidekickPlugin
 import org.ensime.model.NamedTypeMemberInfoLight
+import errorlist.{ErrorSource, DefaultErrorSource}
 
 object ServerMessageHandler extends Actor {
   def act() {
@@ -18,7 +19,24 @@ object ServerMessageHandler extends Actor {
           println("Compiler Ready:" + Global.initialized)
         }
         case result: TypeCheckResult => {
-          println(result)
+          val errors = new DefaultErrorSource("ProjectErrors")
+
+          val notes = result.notes
+          notes.foreach(note => {
+            if(note.severity!=0) {
+              val msg = note.msg
+              val start = note.beg
+              val length = note.end - start
+              val line = note.line
+              val path = note.file
+              val severity =
+                if (note.severity == 2) ErrorSource.ERROR
+                else ErrorSource.WARNING
+              errors.addError(severity, path, line-1, start, 0, msg)
+            }
+            ErrorSource.registerErrorSource(errors)
+            println(result)
+          })
         }
         case bgMsg: BackgroundMessage => {
           println("bgMSG:" + bgMsg)
@@ -26,18 +44,10 @@ object ServerMessageHandler extends Actor {
         case SymbolInfoLightMsg(value) => {
           println(value)
         }
-        case RefactorResultMsg(value) => {
-          println("RefactorResult:" + value.touched)
-          Global.currentBuffer.reload(Global.currentView)
-          //Global.currentBuffer.autosave()
-        }
-        case RefactorEffectMsg(value) => handleRefactoring(value)
-        case RefactorFailureMsg(value) => {
-          println("Failure:" + value)
-        }
+
 
         case Container(value, id) => {
-          
+
           val action = Global.actions.remove(id).getOrElse(null)
           if (action != null) {
             value match {
@@ -50,43 +60,51 @@ object ServerMessageHandler extends Actor {
                 action(sList)
               }
               case SymbolInfoMsg(value) => {
-                try {
+                try
+                {
                   val pos = value.declPos
                   val path = pos.source.path
                   val offset = pos.point
-                  val sList = List(path,offset.toString)
+                  val sList = List(path, offset.toString)
                   action(sList)
                 }
                 catch {
-                  case e:UnsupportedOperationException => println("Could not find declaration")
+                  case e: UnsupportedOperationException => println("Could not find declaration")
                 }
 
               }
               case BooleanMsg(value) => {
                 action(null)
               }
+              case RefactorEffectMsg(value) => {
+                val id  = ScalaSidekickPlugin.msgCounter
+
+                Global.actions += id -> {(_:List[String]) => action(null)}
+                handleRefactoring(value,id)
+              }
+              case RefactorResultMsg(value) => action(null)
+              case RefactorFailureMsg(value) => {
+                println("Failure:" + value)
+              }
               case other => ()
             }
           }
-        }
-        case IterableValues(list) => {
-          //Global.actions.remove(1)
         }
         case other => println("WTF:" + other)
       }
     }
   }
 
-  private def handleRefactoring(effect: RefactorEffect) {
+  private def handleRefactoring(effect: RefactorEffect, id:Int) {
     effect.refactorType.toString match {
       case "'organizeImports" => {
         println("###Text:" + effect.changes.mkString)
-        ClientSender ! ExecRefactoring("organizeImports", effect.procedureId, ScalaSidekickPlugin.msgCounter)
+        ClientSender ! ExecRefactoring("organizeImports", effect.procedureId, id)
         println("###Exec")
       }
       case "'rename" => {
         println("###Text:" + effect.changes.mkString)
-        ClientSender ! ExecRefactoring("rename", effect.procedureId, ScalaSidekickPlugin.msgCounter)
+        ClientSender ! ExecRefactoring("rename", effect.procedureId,id )
         println("###Exec")
       }
       case other => println("Uknown refactor:" + other)

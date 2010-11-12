@@ -43,6 +43,10 @@ case class TypecheckFile(path:String, msgID: Int) extends WireFormat with Messag
   def toWireString = toString()
 }
 
+case class TypecheckAll(msgID: Int) extends WireFormat with MessageID {
+  def toWireString = toString()
+} 
+
 case class ReformatFile(path:String, msgID: Int) extends WireFormat with MessageID {
   def toWireString = toString()
 }
