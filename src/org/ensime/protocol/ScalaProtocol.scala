@@ -50,9 +50,6 @@ trait ScalaProtocol extends Protocol {
       case TypeAtPoint(file, offset, id) => {
         rpcTarget.rpcTypeAtPoint(file, offset, id)
       }
-      case InspectTypeAtPoint(file, offset, id) => {
-        rpcTarget.rpcInspectTypeAtPoint(file, offset, id)
-      }
       case TypeCompletion(file, offset, word, id) => {
         rpcTarget.rpcTypeCompletion(file, offset, word, id)
       }
@@ -82,6 +79,9 @@ trait ScalaProtocol extends Protocol {
         val iter = Iterable(path)
         rpcTarget.rpcFormatFiles(iter,id)
 
+      }
+      case SymbolAtPoint(file,offset,id) => {
+        rpcTarget.rpcSymbolAtPoint(file, offset, id)
       }
       case other => println("###ERROR WRONG MESSAGE :" + other)
     }

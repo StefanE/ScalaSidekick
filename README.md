@@ -9,21 +9,28 @@ Look at the downloads page to see latest release version [download](http://githu
 
 ##Implemented (Runs through Ensime)
 
+###Refactoring
 - Reformat scala file using [Scalariform](http://github.com/mdr/scalariform) and defaults
 - Organize Imports
 - Rename
+
+###Code assist
 - Code completion
 - Get Type info
+- Find definition
+
+# Misc
+- Exact navigation (Enter name on class,object or trait). Should be improved to look more like OpenIt.
 
 ##Current work
 - Using a customized [Ensime Server](http://github.com/aemoncannon/ensime) as backend, a lot of stuff can be reused. If it is a success a lot of the planned features will be included in this implementation
 
 ##Known bugs
 - Problems with autocompletion of imports...
+- Completion dont filter when user types characters
 
 ##Planned
 
-- Quick Navigation between Traits, Objects and Classes
 - Comments
   - Scaladoc for definition on line
   - Insert new Scaladoc comment line
@@ -38,7 +45,6 @@ Look at the downloads page to see latest release version [download](http://githu
 
 ## How to use it
 
-Currently the plugin is a bit rough. It depends on that you use projectViewer. The project root should be pointing on a SBT project. 
-When you have done that, you should Init Project, after some time it has intialized, and then you can use the implemented stuff:)
+Will soon put up a screencast showing the usage.
 
 More will be added later

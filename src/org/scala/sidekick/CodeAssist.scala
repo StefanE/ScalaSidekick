@@ -9,6 +9,7 @@ import org.ensime.client.{Global, ClientSender}
 import org.gjt.sp.jedit.gui.CompletionPopup
 import org.gjt.sp.jedit.textarea.JEditTextArea
 import org.scala.sidekick.ScalaSidekickPlugin._
+import java.awt.event.{KeyEvent, KeyAdapter}
 
 object CodeAssist {
   def complete(textArea:JEditTextArea, view:View) {
@@ -27,11 +28,10 @@ object CodeAssist {
     Global.actions += msgID -> {(list:List[String]) => {
       val pos =  textArea.getLocationOnScreen
       val relpos = textArea.offsetToXY(caret)
-      val position = new Point(
-      (pos.getX+relpos.getX+40).toInt
-      , (pos.getY+relpos.getY).toInt)
+      val position = new Point((pos.getX+relpos.getX+40).toInt, (pos.getY+relpos.getY).toInt)
       val completion = new CompletionPopup(view, position)
-      completion.reset(new Options(view.getTextArea,list),true)      
+      val options = new Options(view.getTextArea,list)
+      completion.reset(options,true)
     } }
     
     if(lineTxt.contains('.')) {
@@ -39,7 +39,6 @@ object CodeAssist {
       if(word == ".") {
         word = ""
         textArea.setCaretPosition(caret+1)
-        //relPos += 1
       } else {relPos += 1}
 
       ClientSender ! TypeCompletion(file, caret-relPos, word, msgID)      

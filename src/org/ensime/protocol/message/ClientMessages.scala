@@ -17,11 +17,6 @@ case class TypeAtPoint(filePath: String, offset: Int,msgID: Int)
   def toWireString = toString()
 }
 
-case class InspectTypeAtPoint(filePath: String, offset: Int,msgID: Int)
-        extends WireFormat with MessageID{
-  def toWireString = toString()
-}
-
 case class TypeCompletion(filePath: String, offset: Int, word:String, msgID: Int)
         extends WireFormat with MessageID{
   def toWireString = toString()
@@ -51,3 +46,7 @@ case class TypecheckFile(path:String, msgID: Int) extends WireFormat with Messag
 case class ReformatFile(path:String, msgID: Int) extends WireFormat with MessageID {
   def toWireString = toString()
 }
+
+case class SymbolAtPoint(file:String,offset:Int,msgID:Int) extends WireFormat with MessageID {
+  def toWireString = toString()
+} 

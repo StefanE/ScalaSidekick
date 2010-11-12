@@ -4,8 +4,12 @@ import collection.JavaConversions
 import projectviewer.ProjectViewer
 import io.Source
 import projectviewer.vpt.VPTNode
-import org.gjt.sp.jedit. {jEdit, View}
 import java.io._
+import org.gjt.sp.jedit.textarea.JEditTextArea
+import org.ensime.protocol.message.SymbolAtPoint
+import org.scala.sidekick.ScalaSidekickPlugin._
+import org.ensime.client.{Global, ClientSender}
+import org.gjt.sp.jedit.{GUIUtilities, Buffer, jEdit, View}
 
 object Navigation {
 
@@ -24,6 +28,48 @@ object Navigation {
   def navigateTo(view: View) {
     if (!indexLoaded)
       createIndex(view)
+
+    val request = GUIUtilities.input(null,"info.goto",null)
+    val elemList = index.filter(e => e.name == request)
+    if(!elemList.isEmpty) {
+      val goto = elemList(0)
+      val buffer = jEdit.openFile(view,goto.path)
+      try {
+        view.getTextArea.setFirstLine(goto.line)
+      }
+      catch {
+        case e:NullPointerException => println("NullPointer at GotoDefinition")
+      }
+    }
+    else {
+      GUIUtilities.message(null,"info.goto.unknown",null)
+    }
+
+  }
+  
+  def gotoDefinition(textArea: JEditTextArea, view: View) {
+    setCurrent(textArea,view)
+    val buffer = view.getBuffer
+    val path = buffer.getPath
+    val caret = textArea.getCaretPosition()
+    val msgID = msgCounter()
+    
+    Global.actions += msgID -> {(list:List[String]) => {
+      //Faa en liste med to elementer prefix og path til fil, gaa hen til den
+       val path = list(0)
+       val offset = list(1).toInt
+       val buffer = jEdit.openFile(view,path)
+      try {
+        view.getTextArea.setCaretPosition(offset)
+      }
+      catch {
+        case e:NullPointerException => println("NullPointer at GotoDefinition")
+      }
+
+    } }
+    
+    ClientSender ! SymbolAtPoint(path,caret,msgID)
+    
   }
 
   def createIndex(view: View) {
@@ -34,7 +80,7 @@ object Navigation {
     val scalaNodes = projectNodes.filter(_.getNodePath.endsWith("scala"))
 
     for (node <- scalaNodes) {
-      //TODO: This binding could be dangerous!?
+      //TODO: This binding maybe don't always work!?
       val lines = Source.fromFile(node.getNodePath)("ISO-8859-1").getLines
       var lineCounter = 0
       for (line <- lines) {
@@ -110,6 +156,11 @@ object Navigation {
 
   private def getIndexPath() {
     //Later remove duplicate code
+  }
+
+  private def setCurrent(editor: JEditTextArea, view:View) {
+    Global.currentView = view
+    Global.currentBuffer = view.getBuffer
   }
 }
 

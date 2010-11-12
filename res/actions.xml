@@ -38,4 +38,9 @@
         org.scala.sidekick.ScalaSidekickPlugin.initProject(view);
         </CODE>
     </ACTION>
+    <ACTION NAME="ToDefinition">
+        <CODE>
+        org.scala.sidekick.ScalaSidekickPlugin.toDefinition(textArea,view);
+        </CODE>
+    </ACTION>
 </ACTIONS>

@@ -35,11 +35,7 @@ object ServerMessageHandler extends Actor {
         case RefactorFailureMsg(value) => {
           println("Failure:" + value)
         }
-        case BooleanMsg(value) => {
-          if (Global.currentBuffer != null)
-            Global.currentBuffer.reload(Global.currentView)
-          //Global.currentBuffer.autosave()
-        }
+
         case Container(value, id) => {
           
           val action = Global.actions.remove(id).getOrElse(null)
@@ -52,6 +48,22 @@ object ServerMessageHandler extends Actor {
               case TypeInfoMsg(value) => {
                 val sList = List(value.fullName)
                 action(sList)
+              }
+              case SymbolInfoMsg(value) => {
+                try {
+                  val pos = value.declPos
+                  val path = pos.source.path
+                  val offset = pos.point
+                  val sList = List(path,offset.toString)
+                  action(sList)
+                }
+                catch {
+                  case e:UnsupportedOperationException => println("Could not find declaration")
+                }
+
+              }
+              case BooleanMsg(value) => {
+                action(null)
               }
               case other => ()
             }
