@@ -7,7 +7,7 @@ plugin.org.scala.sidekick.ScalaSidekickPlugin.docs=scalaSidekickPlugin.html
 
 #dependencies
 plugin.org.scala.sidekick.ScalaSidekickPlugin.depend.0=jedit 04.03.01.99
-plugin.org.scala.sidekick.ScalaSidekickPlugin.depend.1= plugin projectviewer.ProjectViewerPlugin 3.0.1
+#Doesnt work? plugin.org.scala.sidekick.ScalaSidekickPlugin.depend.1= plugin projectviewer.ProjectViewerPlugin 03.00.00
 plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4
 
 

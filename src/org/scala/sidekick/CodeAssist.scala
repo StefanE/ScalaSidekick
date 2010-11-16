@@ -1,15 +1,15 @@
 package org.scala.sidekick
 
 import java.awt.Point
-import javax.swing.{JList, DefaultListCellRenderer}
 import org.gjt.sp.jedit.gui.CompletionPopup.Candidates
 import org.gjt.sp.jedit.{GUIUtilities, View}
 import org.ensime.protocol.message.{TypeAtPoint, ScopeCompletion, TypeCompletion}
 import org.ensime.client.{Global, ClientSender}
-import org.gjt.sp.jedit.gui.CompletionPopup
 import org.gjt.sp.jedit.textarea.JEditTextArea
 import org.scala.sidekick.ScalaSidekickPlugin._
 import java.awt.event.{KeyEvent, KeyAdapter}
+import org.gjt.sp.jedit.gui.{CompleteWord, CompletionPopup}
+import javax.swing.{SwingUtilities, JList, DefaultListCellRenderer}
 
 object CodeAssist {
   def complete(textArea:JEditTextArea, view:View) {
@@ -26,19 +26,31 @@ object CodeAssist {
     
     //Should be executed when answer returns
     Global.actions += msgID -> {(list:List[String]) => {
-      val pos =  textArea.getLocationOnScreen
+      /*val pos =  textArea.getLocationOnScreen
       val relpos = textArea.offsetToXY(caret)
-      val position = new Point((pos.getX+relpos.getX+40).toInt, (pos.getY+relpos.getY).toInt)
-      val completion = new CompletionPopup(view, position)
+      val position = new Point((pos.getX+relpos.getX+40).toInt, (pos.getY+relpos.getY).toInt)*/
+      
+      var position: Point = textArea.offsetToXY(caret - word.length)
+      position.y += textArea.getPainter.getFontMetrics.getHeight
+      SwingUtilities.convertPointToScreen(position, textArea.getPainter)
+      
       val options = new Options(view.getTextArea,list)
+      /*
+      val completion = new CompletionPopup(view, position)
+
       completion.reset(options,true)
+      
+       */
+      val completion = new CodeCompletion(view,position,list,word)
+      completion.reset(options,true)
+
     } }
-    
+    textArea.setCaretPosition(currentCarPos)
     if(lineTxt.contains('.')) {
       var relPos = 0
       if(word == ".") {
         word = ""
-        textArea.setCaretPosition(caret+1)
+        //textArea.setCaretPosition(caret+1)
       } else {relPos += 1}
 
       ClientSender ! TypeCompletion(file, caret-relPos, word, msgID)      
@@ -62,30 +74,3 @@ object CodeAssist {
   }
 }
 
-class Options(val textArea:JEditTextArea, val options:List[String]) extends Candidates {
-
-  private val renderer = new DefaultListCellRenderer()
-
-  def complete(index : Int) {
-    val completion = options(index)
-    //Filter what is actually completed
-    val fillIn = completion.split(' ')(0)
-    textArea.setSelectedText(fillIn);
-  }
-  
-  def getCellRenderer(list:JList, index: Int, isSelected:Boolean,cellHasFocus:Boolean ) = {
-      renderer.getListCellRendererComponent(
-        list, null, index,isSelected, cellHasFocus);
-    val font = list.getFont
-    val text = options(index)
-        
-    renderer.setText(text);
-    renderer.setFont(font);
-    
-    renderer
-  }
-  
-  def getDescription(index:Int) = ""  
-  def getSize = options.size
-  def isValid = true
-}

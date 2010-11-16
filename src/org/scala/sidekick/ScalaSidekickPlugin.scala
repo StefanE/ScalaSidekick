@@ -131,11 +131,12 @@ class ScalaSidekickPlugin extends EBPlugin {
         }
       }
       case e: VFSUpdate => {
+        /*  TODO: Steals focus from completion
         val path = e.getPath
         if (path.endsWith(".scala") && Navigation.index.exists(_.path.equalsIgnoreCase(path))) {
           ScalaSidekickPlugin.clearErrors()
           ClientSender ! TypecheckFile(path, ScalaSidekickPlugin.msgCounter())
-        }
+        }  */
          
       }
       case other => println(other)
