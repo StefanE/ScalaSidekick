@@ -35,11 +35,11 @@ object ScalaSidekickPlugin {
 
   def initProject(view: View) = {
     var projectPath = ProjectViewer.getActiveProject(view).getRootPath
-
+    Global.typeCheck = true
     if (Global.initialized) {
-      ClientSender ! InitProject("c:/Users/Stefan/Desktop/emacs-23.2/dist", "", "sbt", projectPath, msgCounter())
-      GUIUtilities.message(null, "info.restarting", null)
       Global.initialized = false
+      ClientSender ! InitProject("c:/Users/Stefan/Desktop/emacs-23.2/dist", "", "sbt", projectPath, msgCounter())
+      GUIUtilities.message(null, "info.restarting", null)      
     }
     else {
       ClientReceiver.start
@@ -49,7 +49,8 @@ object ScalaSidekickPlugin {
       projectPath = GUIUtilities.input(null, "info.init.confirm", null, projectPath)
 
       ClientSender ! GetConnectionInfo(0)
-      ClientSender ! InitProject("c:/Users/Stefan/Desktop/emacs-23.2/dist", "", "sbt", projectPath, msgCounter())
+      //ClientSender ! InitProject("c:/Users/Stefan/Desktop/emacs-23.2/dist", "", "sbt", projectPath, msgCounter())
+      ClientSender ! InitProject("", "", "sbt", projectPath, msgCounter())
 
       Navigation.createIndex(view)
     }
@@ -93,6 +94,7 @@ object ScalaSidekickPlugin {
 
   def typeCheckProject(textArea: JEditTextArea, view: View) {
     clearErrors()
+    Global.typeCheck = true
     ClientSender ! TypecheckAll(msgCounter())
   }
 
@@ -131,12 +133,12 @@ class ScalaSidekickPlugin extends EBPlugin {
         }
       }
       case e: VFSUpdate => {
-        /*  TODO: Steals focus from completion
+        /*  TODO: Steals focus from completion */
         val path = e.getPath
         if (path.endsWith(".scala") && Navigation.index.exists(_.path.equalsIgnoreCase(path))) {
-          ScalaSidekickPlugin.clearErrors()
+          //ScalaSidekickPlugin.clearErrors()
           ClientSender ! TypecheckFile(path, ScalaSidekickPlugin.msgCounter())
-        }  */
+        }
          
       }
       case other => println(other)

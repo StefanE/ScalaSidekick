@@ -8,4 +8,5 @@ object Global {
   var currentBuffer:Buffer = _
   var initialized = false
   val actions: HashMap[Int,Function1[List[String],Unit]] = HashMap()
+  var typeCheck = false
 }

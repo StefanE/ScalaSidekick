@@ -46,9 +46,9 @@ class CodeCompletion(view: View, location: Point, val firstList: List[String], v
     if (e.getKeyCode == KeyEvent.VK_BACK_SPACE) {
       textArea.backspace
       e.consume
-      if (word.length == 1) {
+      if (word.length == 0) {
         println("DISPOSE2")
-        dispose
+        //dispose
       }
       else {
 

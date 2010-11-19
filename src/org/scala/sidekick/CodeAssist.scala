@@ -3,17 +3,22 @@ package org.scala.sidekick
 import java.awt.Point
 import org.gjt.sp.jedit.gui.CompletionPopup.Candidates
 import org.gjt.sp.jedit.{GUIUtilities, View}
-import org.ensime.protocol.message.{TypeAtPoint, ScopeCompletion, TypeCompletion}
 import org.ensime.client.{Global, ClientSender}
 import org.gjt.sp.jedit.textarea.JEditTextArea
 import org.scala.sidekick.ScalaSidekickPlugin._
 import java.awt.event.{KeyEvent, KeyAdapter}
 import org.gjt.sp.jedit.gui.{CompleteWord, CompletionPopup}
 import javax.swing.{SwingUtilities, JList, DefaultListCellRenderer}
+import org.ensime.protocol.message.{TypecheckFile, TypeAtPoint, ScopeCompletion, TypeCompletion}
 
 object CodeAssist {
   def complete(textArea:JEditTextArea, view:View) {
-    view.getBuffer.save(view,null)
+    //Make some kind og save, else user should do it manually
+    //view.getBuffer.save(view,null)
+    //Thread.sleep(200)
+    /*view.getBuffer.save(view,null)*/
+    //view.getBuffer.autosave()
+    /*Thread.sleep(200)   */
     val currentCarPos = textArea.getCaretPosition()
     textArea.goToPrevWord(true)
     val file = view.getBuffer.getPath
@@ -26,13 +31,13 @@ object CodeAssist {
     
     //Should be executed when answer returns
     Global.actions += msgID -> {(list:List[String]) => {
-      /*val pos =  textArea.getLocationOnScreen
+      val pos =  textArea.getLocationOnScreen
       val relpos = textArea.offsetToXY(caret)
-      val position = new Point((pos.getX+relpos.getX+40).toInt, (pos.getY+relpos.getY).toInt)*/
+      val position = new Point((pos.getX+relpos.getX+40).toInt, (pos.getY+relpos.getY).toInt)
       
-      var position: Point = textArea.offsetToXY(caret - word.length)
-      position.y += textArea.getPainter.getFontMetrics.getHeight
-      SwingUtilities.convertPointToScreen(position, textArea.getPainter)
+      //var position: Point = textArea.offsetToXY(caret - word.length)
+      //position.y += textArea.getPainter.getFontMetrics.getHeight
+      //SwingUtilities.convertPointToScreen(position, textArea.getPainter)
       
       val options = new Options(view.getTextArea,list)
       /*
@@ -55,11 +60,14 @@ object CodeAssist {
 
       ClientSender ! TypeCompletion(file, caret-relPos, word, msgID)      
     }
-    else {ClientSender ! ScopeCompletion(file, currentCarPos, word, false, msgID)}
+    else {ClientSender ! ScopeCompletion(file, caret, word, false, msgID)}
   }
    
   def getType(textArea:JEditTextArea, view:View) {
-    view.getBuffer.autosave
+    //view.getBuffer.autosave
+
+    //view.getBuffer.autosave()
+    //Thread.sleep(300)
     val currentCarPos = textArea.getCaretPosition()
     val file = view.getBuffer.getPath
     val id = msgCounter()

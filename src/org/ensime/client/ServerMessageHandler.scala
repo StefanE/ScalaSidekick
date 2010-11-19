@@ -23,7 +23,7 @@ object ServerMessageHandler extends Actor {
 
           val notes = result.notes
           notes.foreach(note => {
-            if(note.severity!=0) {
+            if (note.severity != 0) {
               val msg = note.msg
               val start = note.beg
               val length = note.end - start
@@ -32,11 +32,14 @@ object ServerMessageHandler extends Actor {
               val severity =
                 if (note.severity == 2) ErrorSource.ERROR
                 else ErrorSource.WARNING
-              errors.addError(severity, path, line-1, start, 0, msg)
+              errors.addError(severity, path, line - 1, start, 0, msg)
             }
-            ErrorSource.registerErrorSource(errors)
+
+            if (Global.typeCheck)
+              ErrorSource.registerErrorSource(errors)
             println(result)
           })
+          Global.typeCheck = false
         }
         case bgMsg: BackgroundMessage => {
           println("bgMSG:" + bgMsg)
@@ -77,10 +80,12 @@ object ServerMessageHandler extends Actor {
                 action(null)
               }
               case RefactorEffectMsg(value) => {
-                val id  = ScalaSidekickPlugin.msgCounter
+                val id = ScalaSidekickPlugin.msgCounter
 
-                Global.actions += id -> {(_:List[String]) => action(null)}
-                handleRefactoring(value,id)
+                Global.actions += id -> {
+                  (_: List[String]) => action(null)
+                }
+                handleRefactoring(value, id)
               }
               case RefactorResultMsg(value) => action(null)
               case RefactorFailureMsg(value) => {
@@ -95,7 +100,7 @@ object ServerMessageHandler extends Actor {
     }
   }
 
-  private def handleRefactoring(effect: RefactorEffect, id:Int) {
+  private def handleRefactoring(effect: RefactorEffect, id: Int) {
     effect.refactorType.toString match {
       case "'organizeImports" => {
         println("###Text:" + effect.changes.mkString)
@@ -104,7 +109,7 @@ object ServerMessageHandler extends Actor {
       }
       case "'rename" => {
         println("###Text:" + effect.changes.mkString)
-        ClientSender ! ExecRefactoring("rename", effect.procedureId,id )
+        ClientSender ! ExecRefactoring("rename", effect.procedureId, id)
         println("###Exec")
       }
       case other => println("Uknown refactor:" + other)
