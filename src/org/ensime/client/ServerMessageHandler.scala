@@ -34,12 +34,14 @@ object ServerMessageHandler extends Actor {
                 else ErrorSource.WARNING
               errors.addError(severity, path, line - 1, start, 0, msg)
             }
-
-            if (Global.typeCheck)
-              ErrorSource.registerErrorSource(errors)
-            println(result)
           })
-          Global.typeCheck = false
+          if (Global.typeCheck)
+            ErrorSource.registerErrorSource(errors)
+          println(Global.typeCheck + "" + result)
+
+          //First returns java errors, and then scala errors
+          if (result.lang == 'scala)
+            Global.typeCheck = false
         }
         case bgMsg: BackgroundMessage => {
           println("bgMSG:" + bgMsg)

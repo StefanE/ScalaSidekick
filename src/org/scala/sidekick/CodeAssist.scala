@@ -12,73 +12,75 @@ import javax.swing.{SwingUtilities, JList, DefaultListCellRenderer}
 import org.ensime.protocol.message.{TypecheckFile, TypeAtPoint, ScopeCompletion, TypeCompletion}
 
 object CodeAssist {
-  def complete(textArea:JEditTextArea, view:View) {
-    //Make some kind og save, else user should do it manually
-    //view.getBuffer.save(view,null)
-    //Thread.sleep(200)
-    /*view.getBuffer.save(view,null)*/
-    //view.getBuffer.autosave()
-    /*Thread.sleep(200)   */
-    val currentCarPos = textArea.getCaretPosition()
-    textArea.goToPrevWord(true)
-    val file = view.getBuffer.getPath
+  def complete(textArea: JEditTextArea, view: View) {
+    //TODO: Make some kind og save, else user should do it manually
+    val msgID = msgCounter()
+
     val caret = textArea.getCaretPosition()
-    var word = textArea.getText(caret, (currentCarPos-caret))
-    
     val line = textArea.getCaretLine
     val lineTxt = textArea.getLineText(line)
-    val msgID = msgCounter()
-    
-    //Should be executed when answer returns
-    Global.actions += msgID -> {(list:List[String]) => {
-      val pos =  textArea.getLocationOnScreen
-      val relpos = textArea.offsetToXY(caret)
-      val position = new Point((pos.getX+relpos.getX+40).toInt, (pos.getY+relpos.getY).toInt)
-      
-      //var position: Point = textArea.offsetToXY(caret - word.length)
-      //position.y += textArea.getPainter.getFontMetrics.getHeight
-      //SwingUtilities.convertPointToScreen(position, textArea.getPainter)
-      
-      val options = new Options(view.getTextArea,list)
-      /*
-      val completion = new CompletionPopup(view, position)
-
-      completion.reset(options,true)
-      
-       */
-      val completion = new CodeCompletion(view,position,list,word)
-      completion.reset(options,true)
-
-    } }
-    textArea.setCaretPosition(currentCarPos)
-    if(lineTxt.contains('.')) {
-      var relPos = 0
-      if(word == ".") {
-        word = ""
-        //textArea.setCaretPosition(caret+1)
-      } else {relPos += 1}
-
-      ClientSender ! TypeCompletion(file, caret-relPos, word, msgID)      
-    }
-    else {ClientSender ! ScopeCompletion(file, caret, word, false, msgID)}
-  }
-   
-  def getType(textArea:JEditTextArea, view:View) {
-    //view.getBuffer.autosave
-
-    //view.getBuffer.autosave()
-    //Thread.sleep(300)
-    val currentCarPos = textArea.getCaretPosition()
+    var word = ""
     val file = view.getBuffer.getPath
-    val id = msgCounter()
-    
-    Global.actions += id -> {(list:List[String]) => {
-      val Type = Array[AnyRef](list(0))
-      //TODO: Should show in a nicer way
-      GUIUtilities.message(null,"info.typeInfo",Type)
-    } }
-    
-    ClientSender ! TypeAtPoint(file,currentCarPos,id)
+    var msgToSend: AnyRef = null
+    //val caret = textArea.getCaretPosition()
+    //var word = textArea.getText(caret, (currentCarPos - caret))
+
+    if (lineTxt.contains(".")) {
+      val text = textArea.getText(caret - 1, 1)
+      if (text == ".") {
+        println("###TEST1")
+        textArea.setCaretPosition(caret,false)
+        msgToSend = TypeCompletion(file, caret - 1, "", msgID)
+      }
+      else {
+        println("###TEST2")
+        textArea.goToPrevWord(true)
+        val curCaret = textArea.getCaretPosition
+        word = textArea.getText(curCaret, caret - curCaret)
+        msgToSend = TypeCompletion(file, curCaret - 1, word, msgID)
+      }
+    }
+    else {
+      println("###TEST3")
+      textArea.goToPrevWord(true)
+      val curCaret = textArea.getCaretPosition
+      word = textArea.getText(curCaret, caret - curCaret)
+      msgToSend = ScopeCompletion(file, curCaret, word, false, msgID)
+    }
+
+    //executes when answer returns
+    Global.actions += msgID -> {
+      (list: List[String]) => {
+        val pos = textArea.getLocationOnScreen
+        val relpos = textArea.offsetToXY(caret)
+        val position = new Point((pos.getX + relpos.getX + 40).toInt, (pos.getY + relpos.getY).toInt)
+        val options = new Options(view.getTextArea, list)
+        val completion = new CodeCompletion(view, position, list, word)
+        completion.reset(options, true)
+      }
+    }
+    ClientSender ! msgToSend
+  }
+
+  def getType(textArea: JEditTextArea, view: View) {
+    //view.getBuffer.autosave
+    //Thread.sleep(300)
+    if (view.getBuffer.isDirty)
+      GUIUtilities.message(null, "info.save", null)
+    else {
+      val currentCarPos = textArea.getCaretPosition()
+      val file = view.getBuffer.getPath
+      val id = msgCounter()
+
+      Global.actions += id -> {
+        (list: List[String]) => {
+          val Type = Array[AnyRef](list(0))
+          //TODO: Should show in a nicer way
+          GUIUtilities.message(null, "info.typeInfo", Type)
+        }
+      }
+
+      ClientSender ! TypeAtPoint(file, currentCarPos, id)
+    }
   }
 }
-

@@ -34,7 +34,8 @@ object Navigation {
       val goto = elemList(0)
       val buffer = jEdit.openFile(view,goto.path)
       try {
-        view.getTextArea.setFirstLine(goto.line)
+        val offset = view.getTextArea.getLineStartOffset(goto.line-1)
+        view.getTextArea.setCaretPosition(offset)
       }
       catch {
         case e:NullPointerException => println("NullPointer at GotoDefinition")

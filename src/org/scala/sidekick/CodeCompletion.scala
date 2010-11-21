@@ -102,7 +102,10 @@ private class Options(val textArea: JEditTextArea, val options: List[String]) ex
   def complete(index: Int) {
     val completion = options(index)
     val fillIn = completion.split(' ')(0)
-    textArea.selectWord
+    val caret = textArea.getCaretPosition
+    val text = textArea.getText(caret - 1, 1)
+    if(text != ".")
+      textArea.selectWord
     textArea.setSelectedText(fillIn);
   }
 

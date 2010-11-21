@@ -15,14 +15,18 @@ object Refactoring {
     if (view.getBuffer.isDirty)
       GUIUtilities.message(null, "info.save", null)
     else {
-      val newName = GUIUtilities.input(null, "info.rename", null)
 
       val buffer = view.getBuffer
       val path = buffer.getPath
 
-      val select = editor.getSelection(0)
-      val start = select.getStart
-      val end = select.getEnd
+      editor.selectWord
+      val selection = editor.getSelection(0)
+      val start = selection.getStart
+      val end = selection.getEnd
+      val oldName = editor.getText(start, end-start)
+
+      val newName = GUIUtilities.input(null, "info.rename", null, oldName)
+
       val procID = ScalaSidekickPlugin.procCounter
       val msgID = ScalaSidekickPlugin.msgCounter
 

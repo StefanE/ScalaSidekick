@@ -38,6 +38,7 @@ object ScalaSidekickPlugin {
     Global.typeCheck = true
     if (Global.initialized) {
       Global.initialized = false
+      clearErrors
       ClientSender ! InitProject("c:/Users/Stefan/Desktop/emacs-23.2/dist", "", "sbt", projectPath, msgCounter())
       GUIUtilities.message(null, "info.restarting", null)      
     }
