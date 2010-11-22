@@ -48,4 +48,12 @@
         org.scala.sidekick.ScalaSidekickPlugin.typeCheckProject(textArea,view);
         </CODE>
     </ACTION>
+    <ACTION NAME="ScalaConsole">
+		<CODE>
+			wm.addDockableWindow("console");
+			dockable = wm.getDockableWindow("console");
+			shell = console.Shell.getShell("Scala");
+			shell.eval(dockable,"");
+		</CODE>
+	</ACTION>
 </ACTIONS>
