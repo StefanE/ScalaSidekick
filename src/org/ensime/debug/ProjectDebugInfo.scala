@@ -4,8 +4,9 @@ import org.ensime.util.RichFile._
 import org.ensime.util.FileUtils._
 import org.ensime.config.ProjectConfig
 import scala.collection.mutable.{ HashMap, ArrayBuffer }
-import java.io.File
-import org.apache.bcel.classfile._
+import java.io._
+import org.objectweb.asm._
+import org.objectweb.asm.commons.EmptyVisitor
 import scala.math._
 
 case class DebugSourceLinePairs(pairs: Iterable[(String, Int)])
@@ -13,6 +14,7 @@ case class DebugSourceLinePairs(pairs: Iterable[(String, Int)])
 class ProjectDebugInfo(projectConfig: ProjectConfig) {
 
   private val target: File = projectConfig.target.getOrElse(new File("."))
+
 
   /**
    * For each (classname,line) pair, return the corresponding
@@ -77,58 +79,112 @@ class ProjectDebugInfo(projectConfig: ProjectConfig) {
     }
 
     classFiles.foreach { f =>
-      val parser = new ClassParser(f.getAbsolutePath)
-      val javaClass = parser.parse
-      val qualName = javaClass.getClassName
-      val packageName = javaClass.getPackageName
-      val sourceName = javaClass.getSourceFileName
+      val fs = new FileInputStream(f)
+      try {
+        val reader = new ClassReader(fs)
+        reader.accept(new EmptyVisitor() {
+          var qualName: String = null
+          var packageName: String = null
+          var sourceName: String = null
+          var startLine = Int.MaxValue
+          var endLine = Int.MinValue
 
-      val possibleSourcePaths = sourceNameToSourcePath(sourceName)
-      possibleSourcePaths.foreach { p =>
-        val paths = classNameToSourcePath(qualName)
-        paths += p
-        classNameToSourcePath(qualName) = paths
-      }
+          override def visit(version: Int, access: Int,
+            name: String, signature: String, superName: String,
+            interfaces: Array[String]) {
 
-      var startLine = Int.MaxValue
-      var endLine = Int.MinValue
+            if (name != null) {
+              qualName = name.replace("/", ".")
+              packageName = qualName.split(".").lastOption.getOrElse("")
+              println("")
+              println("--------")
+              println(qualName)
+            }
+          }
 
-      def handleAttribute(att: Attribute) {
-        att match {
-          case code: Code =>
-            {
-              val lt = code.getLineNumberTable
-              if (lt != null) {
-                val tbl = lt.getLineNumberTable
-                for (line <- tbl) {
-                  startLine = min(startLine, line.getLineNumber)
-                  endLine = max(endLine, line.getLineNumber)
-                }
+          override def visitAttribute(att: Attribute) {
+            println("Attribute:" + att.`type`)
+          }
+
+          override def visitAnnotation(desc: String,
+            visibleAtRuntime: Boolean): AnnotationVisitor = {
+            println("Annotation: " + desc)
+            new EmptyVisitor() {
+              override def visit(name: String, value: Object) {
+                println(name)
+              }
+              override def visitArray(name: String): AnnotationVisitor = {
+                println("Array:" + name)
+                null
+              }
+              override def visitEnum(name: String, desc: String, value: String) {
+                println("Enum:" + name)
               }
             }
-          case att => {}
+          }
+
+          override def visitField(i: Int, s1: String,
+            s2: String, s3: String, a: Any): FieldVisitor = null
+
+          override def visitMethod(access: Int, name: String,
+            desc: String, signature: String,
+            exceptions: Array[String]): MethodVisitor = {
+            println("Method: " + signature + " " + name)
+            new EmptyVisitor() {
+
+              override def visitLineNumber(line: Int, start: Label) {
+                println("  line: " + line + ", label=" + start)
+                startLine = min(startLine, line)
+                endLine = max(endLine, line)
+              }
+
+              override def visitAttribute(att: Attribute) {}
+              override def visitAnnotation(desc: String,
+                visibleAtRuntime: Boolean): AnnotationVisitor = null
+              override def visitAnnotationDefault(): AnnotationVisitor = null
+              override def visitParameterAnnotation(parameter: Int,
+                desc: String, visible: Boolean): AnnotationVisitor = null
+            }
+          }
+
+          override def visitSource(source: String, debug: String) {
+            sourceName = source
+          }
+
+          override def visitEnd() {
+            val possibleSourcePaths = sourceNameToSourcePath(sourceName)
+            possibleSourcePaths.foreach { p =>
+              val paths = classNameToSourcePath(qualName)
+              paths += p
+              classNameToSourcePath(qualName) = paths
+            }
+
+            // Notice that a single name may resolve to many units.
+            // This is either due to many classes/objects declared in one file,
+            // or the fact that the mapping from source name to source path is 
+            // one to many.
+            val units = sourceNameToUnits(sourceName)
+            val newU = new DebugUnit(startLine, endLine, f,
+              sourceName, packageName, qualName)
+            units += newU
+
+            // Sort in descending order of startLine, so first unit found will also be 
+            // the most deeply nested.
+            val sortedUnits = units.sortWith { (a, b) => a.startLine > b.startLine }
+
+            sourceNameToUnits(sourceName) = sortedUnits
+          }
+
+        }, 0)
+      } catch {
+        case e: Exception => {
+          System.err.println("Error reading classfile.")
+          e.printStackTrace(System.err)
         }
       }
-
-      javaClass.getMethods.foreach { m =>
-        m.getAttributes.foreach { at =>
-          handleAttribute(at)
-        }
+      finally {
+        fs.close()
       }
-
-      // Notice that a single name may resolve to many units.
-      // This is either due to many classes/objects declared in one file,
-      // or the fact that the mapping from source name to source path is 
-      // one to many.
-      val units = sourceNameToUnits(sourceName)
-      val newU = new DebugUnit(startLine, endLine, f, sourceName, packageName, qualName)
-      units += newU
-
-      // Sort in descending order of startLine, so first unit found will also be 
-      // the most deeply nested.
-      val sortedUnits = units.sortWith { (a, b) => a.startLine > b.startLine }
-
-      sourceNameToUnits(sourceName) = sortedUnits
     }
     println("Finished parsing " + classFiles.length + " class files.")
   }

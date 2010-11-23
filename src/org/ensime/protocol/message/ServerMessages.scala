@@ -18,7 +18,7 @@ case class CompilerReady() extends WireFormat {
   def toWireString = toString()
 }
 
-case class TypeCheckResult(lang: Symbol, isFull: Boolean, notes: Iterable[Note])
+case class TypeCheckResult(isFull: Boolean, notes: Iterable[Note])
   extends WireFormat {
   def toWireString = toString()
 }

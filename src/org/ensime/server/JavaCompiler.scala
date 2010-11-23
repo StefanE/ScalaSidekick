@@ -87,9 +87,9 @@ class JavaCompiler(config: ProjectConfig) {
   private val errorPolicy = DefaultErrorHandlingPolicies.proceedWithAllProblems()
 
   private val options = new CompilerOptions(Map(
-    CompilerOptions.OPTION_Compliance -> "1.6",
-    CompilerOptions.OPTION_Source -> "1.6",
-    CompilerOptions.OPTION_TargetPlatform -> "1.6"
+      CompilerOptions.OPTION_Compliance -> "1.6",
+      CompilerOptions.OPTION_Source -> "1.6",
+      CompilerOptions.OPTION_TargetPlatform -> "1.6"
     ))
 
   class Requester(nameProvider: NameProvider) extends ICompilerRequestor {
@@ -121,20 +121,29 @@ class JavaCompiler(config: ProjectConfig) {
 
   }
 
-  def compileAll = {
+  def compileAll() = {
     val units = javaUnitForFile.values
     if (!(units.isEmpty)) {
       compiler.compile(units.toArray)
     }
   }
 
+  def addFile(f: File) = {
+    val path = f.getCanonicalPath()
+    if(path.endsWith(".java") && 
+      !javaUnitForFile.contains(path)){
+      javaUnitForFile(path) = new CompilationUnit(null, path, defaultEncoding)
+    }
+  }
+
   def compileFile(f: File) = {
+    addFile(f)
     for (u <- javaUnitForFile.get(f.getCanonicalPath)) {
       compiler.compile(Array(u))
     }
   }
 
-  def allNotes(): Iterable[Note] = {
+  def allNotes: Iterable[Note] = {
     requestor.allNotes
   }
 

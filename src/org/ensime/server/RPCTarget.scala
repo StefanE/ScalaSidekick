@@ -3,10 +3,13 @@ import java.io.File
 import org.ensime.config.ProjectConfig
 import org.ensime.debug.ProjectDebugInfo
 import org.ensime.model._
+import org.ensime.protocol.ProtocolConst._
 import org.ensime.util._
 import scala.actors._
 import scala.actors.Actor._
 import scala.collection.immutable
+import scala.tools.nsc.io.AbstractFile
+import scala.tools.refactoring.common.Change
 import scalariform.formatter.ScalaFormatter
 import scalariform.parser.ScalaParserException
 
@@ -16,7 +19,21 @@ trait RPCTarget { self: Project =>
 
   def rpcInitProject(conf: ProjectConfig, callId: Int) {
     initProject(conf)
-    protocol.sendRPCAckOK(callId)
+    sendRPCReturn(toWF(conf), callId)
+  }
+
+  def rpcPeekUndo(callId: Int) {
+    peekUndo match {
+      case Right(result) => sendRPCReturn(toWF(result), callId)
+      case Left(msg) => sendRPCError(ErrPeekUndoFailed, Some(msg), callId)
+    }
+  }
+
+  def rpcExecUndo(undoId: Int, callId: Int) {
+    execUndo(undoId) match {
+      case Right(result) => sendRPCReturn(toWF(result), callId)
+      case Left(msg) => sendRPCError(ErrExecUndoFailed, Some(msg), callId)
+    }
   }
 
   def rpcReplConfig(callId: Int) {
@@ -90,6 +107,10 @@ trait RPCTarget { self: Project =>
     analyzer ! RPCRequestEvent(TypeCompletionReq(new File(f), point, prefix), callId)
   }
 
+  def rpcPackageMemberCompletion(path: String, prefix: String, callId: Int) {
+    analyzer ! RPCRequestEvent(PackageMemberCompletionReq(path, prefix), callId)
+  }
+
   def rpcInspectTypeAtPoint(f: String, point: Int, callId: Int) {
     analyzer ! RPCRequestEvent(InspectTypeReq(new File(f), point), callId)
   }
@@ -106,8 +127,20 @@ trait RPCTarget { self: Project =>
     analyzer ! RPCRequestEvent(TypeByIdReq(id), callId)
   }
 
+  def rpcTypeByName(name: String, callId: Int) {
+    analyzer ! RPCRequestEvent(TypeByNameReq(name), callId)
+  }
+
+  def rpcTypeByNameAtPoint(name: String, f: String, point: Int, callId: Int) {
+    analyzer ! RPCRequestEvent(TypeByNameAtPointReq(name, new File(f), point), callId)
+  }
+
   def rpcCallCompletion(id: Int, callId: Int) {
     analyzer ! RPCRequestEvent(CallCompletionReq(id), callId)
+  }
+
+  def rpcImportSuggestions(f: String, point: Int, names: List[String], callId: Int) {
+    analyzer ! RPCRequestEvent(ImportSuggestionsReq(new File(f), point, names), callId)
   }
 
   def rpcTypeAtPoint(f: String, point: Int, callId: Int) {
@@ -133,23 +166,27 @@ trait RPCTarget { self: Project =>
   def rpcFormatFiles(filenames: Iterable[String], callId: Int) {
     val files = filenames.map { new File(_) }
     try {
-      val rewriteList = files.map { f =>
+      val changeList = files.map { f =>
         FileUtils.readFile(f) match {
           case Right(contents) => {
             val formatted = ScalaFormatter.format(contents, config.formattingPrefs)
-            (f, formatted)
+            Change(AbstractFile.getFile(f), 0, contents.length, formatted)
           }
           case Left(e) => throw e
         }
       }
-      FileUtils.rewriteFiles(rewriteList) match {
-        case Right(Right(())) => sendRPCAckOK(callId)
-        case Right(Left(e)) =>
-          sendRPCError("ATTENTION! Possibly incomplete write of change-set caused by: " + e, callId)
-        case Left(e) => sendRPCError("Could not write any formatting changes: " + e, callId)
+      addUndo("Formatted source of " + filenames.mkString(", ") + ".", 
+	FileUtils.inverseChanges(changeList))
+      FileUtils.writeChanges(changeList) match {
+        case Right(_) => sendRPCAckOK(callId)
+        case Left(e) =>
+          sendRPCError(ErrFormatFailed, 
+	    Some("Could not write any formatting changes: " + e), callId)
       }
     } catch {
-      case e: ScalaParserException => sendRPCError("Cannot format broken syntax: " + e, callId)
+      case e: ScalaParserException =>
+        sendRPCError(ErrFormatFailed, 
+	  Some("Cannot format broken syntax: " + e), callId)
     }
 
   }

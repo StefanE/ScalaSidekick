@@ -27,11 +27,19 @@ class ScalaShell() extends ProcessShell("Scala") {
     Log.log(Log.DEBUG, this, "Attempting to start Scala process");
 
     //val pb = new ProcessBuilder("c:/scala/bin/scala.bat");
-    val pb = new ProcessBuilder("java","-cp",
-      "c:/scala/lib/scala-library.jar;c:/scala/lib/scala-compiler.jar",
+    val pb = new ProcessBuilder("java","-cp",getScalaJars,
       "scala.tools.nsc.MainGenericRunner","-usejavacp");
     state.p = pb.start();
     Log.log(Log.DEBUG, this, "Scala started.");
+  }
+
+  private def getScalaJars() = {
+    val path = System.getProperty("Scala.Home")
+    System.getProperties.list(System.out)
+    println("###"+path)
+    val lib = path+"/lib/scala-library.jar"
+    val compiler = path+"/lib/scala-compiler.jar"
+    lib+";"+compiler
   }
 
   /* Use this when expanding */

@@ -1,8 +1,8 @@
 package org.ensime.protocol
 
 import java.io._
-import org.ensime.config.{ ProjectConfig, DebugConfig, ReplConfig }
-import org.ensime.debug.{ DebugUnit, DebugSourceLinePairs }
+import org.ensime.config.{ProjectConfig, DebugConfig, ReplConfig}
+import org.ensime.debug.{DebugUnit, DebugSourceLinePairs}
 import org.ensime.model._
 import org.ensime.server._
 import org.ensime.util._
@@ -25,12 +25,18 @@ trait ScalaProtocol extends Protocol {
   private var rpcTarget: RPCTarget = null
 
   //Should be protected?
+
   def peer: Actor = outPeer
 
   /* Below implementation of trait Protocol */
-  def setOutputActor(peer: Actor) { outPeer = peer }
 
-  def setRPCTarget(target: RPCTarget) { this.rpcTarget = target }
+  def setOutputActor(peer: Actor) {
+    outPeer = peer
+  }
+
+  def setRPCTarget(target: RPCTarget) {
+    this.rpcTarget = target
+  }
 
   def writeMessage(value: WireFormat, out: Writer) {
     ClientReceiver ! value
@@ -53,45 +59,45 @@ trait ScalaProtocol extends Protocol {
       case TypeCompletion(file, offset, word, id) => {
         rpcTarget.rpcTypeCompletion(file, offset, word, id)
       }
-      case ScopeCompletion(file,offset,word,constructor,id) => {
+      case ScopeCompletion(file, offset, word, constructor, id) => {
         rpcTarget.rpcScopeCompletion(file, offset, word, constructor, id)
       }
-      case OrganizeImports(file,procId,id,start,end) => {
+      case OrganizeImports(file, procId, id, start, end) => {
         rpcTarget.rpcPerformRefactor(Symbol("organizeImports"), procId,
-          Map(Symbol("file")->file,
-            Symbol("start")->start,
-            Symbol("end")->end),id)
+          Map(Symbol("file") -> file,
+            Symbol("start") -> start,
+            Symbol("end") -> end), id)
       }
-      case Rename(file,procId,id,start,end,newName) => {
+      case Rename(file, procId, id, start, end, newName) => {
         rpcTarget.rpcPerformRefactor(Symbol("rename"), procId,
-          Map(Symbol("file")->file,
-            Symbol("start")->start,
-            Symbol("end")->end,
-            Symbol("newName")->newName),id)
+          Map(Symbol("file") -> file,
+            Symbol("start") -> start,
+            Symbol("end") -> end,
+            Symbol("newName") -> newName), id)
       }
-      case ExecRefactoring(name,procId,id) => {
+      case ExecRefactoring(name, procId, id) => {
         rpcTarget.rpcExecRefactor(Symbol(name), procId, id)
       }
-      case TypecheckFile(path,id) => {
+      case TypecheckFile(path, id) => {
         rpcTarget.rpcTypecheckFile(path, id)
       }
       case TypecheckAll(id) => {
         rpcTarget.rpcTypecheckAll(id)
       }
-      case ReformatFile(path,id) => {
+      case ReformatFile(path, id) => {
         val iter = Iterable(path)
-        rpcTarget.rpcFormatFiles(iter,id)
+        rpcTarget.rpcFormatFiles(iter, id)
 
       }
-      case SymbolAtPoint(file,offset,id) => {
+      case SymbolAtPoint(file, offset, id) => {
         rpcTarget.rpcSymbolAtPoint(file, offset, id)
       }
       case other => println("###ERROR WRONG MESSAGE :" + other)
     }
   }
 
-  def sendBackgroundMessage(msg: String) {
-    sendMessage(BackgroundMessage(msg))
+  def sendBackgroundMessage(code:Int,detail: Option[String]) {
+    sendMessage(BackgroundMessage(code.toString))
   }
 
   def sendRPCAckOK(callId: Int) {
@@ -99,14 +105,14 @@ trait ScalaProtocol extends Protocol {
   }
 
   def sendRPCReturn(value: WireFormat, callId: Int) {
-    sendMessage(Container(value,callId))
+    sendMessage(Container(value, callId))
   }
 
-  def sendRPCError(msg: String, callId: Int) {
+  def sendRPCError(code: Int, detail: Option[String],callID:Int) {
     throw new Exception("Not Implemented")
   }
 
-  def sendProtocolError(packet: String, condition: String) {
+  def sendProtocolError(code:Int, detail:Option[String]) {
     throw new Exception("Not Implemented")
   }
 
@@ -120,11 +126,11 @@ trait ScalaProtocol extends Protocol {
   }
 
   def sendTypeCheckResult(notelist: NoteList) {
-    val NoteList(lang, isFull, notes) = notelist
-    sendMessage(TypeCheckResult(lang, isFull, notes))
+    sendMessage(TypeCheckResult(notelist.full, notelist.notes))
   }
 
   /* Below implementation of trait ProtocolConversions */
+
   def toWF(config: ReplConfig): WireFormat = ReplConfigMsg(config)
 
   def toWF(config: DebugConfig): WireFormat = DebugConfigMsg(config)
@@ -164,4 +170,19 @@ trait ScalaProtocol extends Protocol {
   def toWF(value: RefactorEffect): WireFormat = RefactorEffectMsg(value)
 
   def toWF(value: RefactorResult): WireFormat = RefactorResultMsg(value)
+
+  //New stuff
+  def toWF(value: ImportSuggestions): WireFormat = null
+
+  def toWF(value: Undo): WireFormat = null
+
+  def toWF(value: UndoResult): WireFormat = null
+
+  def toWF(value: Null): WireFormat = null
+
+  def toWF(value: PackageMemberInfoLight): WireFormat = null
+
+  def toWF(notelist: NoteList): WireFormat = null
+
+  def toWF(config: ProjectConfig): WireFormat  = null
 }

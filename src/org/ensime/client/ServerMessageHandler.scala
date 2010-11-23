@@ -40,7 +40,7 @@ object ServerMessageHandler extends Actor {
           println(Global.typeCheck + "" + result)
 
           //First returns java errors, and then scala errors
-          if (result.lang == 'scala)
+          //TODO:
             Global.typeCheck = false
         }
         case bgMsg: BackgroundMessage => {

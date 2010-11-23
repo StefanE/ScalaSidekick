@@ -76,7 +76,7 @@ case class NamedTypeMemberInfoMsg(value: NamedTypeMemberInfo) extends WireFormat
 }
 
 case class NamedTypeMemberInfoLightMsg(value: NamedTypeMemberInfoLight) extends WireFormat {
-  def toWireString = toString()
+  def toWireString = value.name+" Sig: "+value.tpeSig
 }
 
 case class SymbolInfoMsg(value: SymbolInfo) extends WireFormat {
@@ -105,4 +105,12 @@ case class DebugConfigMsg(value: DebugConfig) extends WireFormat {
 
 case class ReplConfigMsg(value: ReplConfig) extends WireFormat {
   def toWireString = toString()
+}
+
+case class IterableValues(values:Iterable[WireFormat]) extends WireFormat {
+  def toWireString = toString()
+}
+
+case class Container(value:WireFormat,id:Int) extends WireFormat {
+  def toWireString() = ""+id
 }
