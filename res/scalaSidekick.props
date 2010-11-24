@@ -15,10 +15,12 @@ plugin.org.scala.sidekick.ScalaSidekickPlugin.description=ScalaSidekickPlugin im
 plugin.org.scala.sidekick.ScalaSidekickPlugin.longdescription=description.html
 
 #menu
-plugin.org.scala.sidekick.ScalaSidekickPlugin.menu=Init - Format Rename OrganizeImports - \
- Completion ShowType ToDefinition Navigate - TypeCheckProject ScalaConsole
+plugin.org.scala.sidekick.ScalaSidekickPlugin.menu=Init - Format  - \
+ Completion ShowType ToDefinition Navigate - TypeCheckProject ScalaConsole \
+ - Experimental - Rename OrganizeImports
 
 #labels
+Experimental.label=Experimental Below (Problematic)
 Format.label=Format Scala File
 Rename.label=Rename
 OrganizeImports.label=Organize Imports
@@ -33,6 +35,9 @@ ScalaConsole.label=Scala Console
 
 #info/Error
 # argument {0}
+
+info.ready.title=Project Ready
+info.ready.message=Project has been initialized
 
 info.restarting.title=Restarting Project
 info.restarting.message=Please wait for the project to restart

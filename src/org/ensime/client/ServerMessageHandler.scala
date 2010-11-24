@@ -6,6 +6,7 @@ import org.ensime.server.RefactorEffect
 import org.scala.sidekick.ScalaSidekickPlugin
 import org.ensime.model.NamedTypeMemberInfoLight
 import errorlist.{ErrorSource, DefaultErrorSource}
+import org.gjt.sp.jedit.GUIUtilities
 
 object ServerMessageHandler extends Actor {
   def act() {
@@ -17,6 +18,7 @@ object ServerMessageHandler extends Actor {
         case CompilerReady() => {
           Global.initialized = true
           println("Compiler Ready:" + Global.initialized)
+          GUIUtilities.message(null,"info.ready",null)
         }
         case result: TypeCheckResult => {
           val errors = new DefaultErrorSource("ProjectErrors")

@@ -25,7 +25,15 @@ object CodeAssist {
     //val caret = textArea.getCaretPosition()
     //var word = textArea.getText(caret, (currentCarPos - caret))
 
-    if (lineTxt.contains(".")) {
+    //val dotPos = lineTxt.findIndexOf(c => c == '.')
+    //val lineOffset = view.getTextArea.getLineStartOffset(line)
+    //println("###"+dotPos+"#"+lineOffset+"#"+textArea.getCaretPosition)
+    textArea.goToPrevWord(true)
+    textArea.goToPrevWord(true)
+    val txt = textArea.getSelectedText
+    textArea.setCaretPosition(caret)
+
+    if (txt.contains(".")) {
       val text = textArea.getText(caret - 1, 1)
       if (text == ".") {
         println("###TEST1")
@@ -37,6 +45,7 @@ object CodeAssist {
         textArea.goToPrevWord(true)
         val curCaret = textArea.getCaretPosition
         word = textArea.getText(curCaret, caret - curCaret)
+        textArea.setCaretPosition(caret,true)
         msgToSend = TypeCompletion(file, curCaret - 1, word, msgID)
       }
     }
@@ -45,6 +54,7 @@ object CodeAssist {
       textArea.goToPrevWord(true)
       val curCaret = textArea.getCaretPosition
       word = textArea.getText(curCaret, caret - curCaret)
+      textArea.setCaretPosition(caret,true)
       msgToSend = ScopeCompletion(file, curCaret, word, false, msgID)
     }
 
