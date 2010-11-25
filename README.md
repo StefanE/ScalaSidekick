@@ -51,7 +51,7 @@ Look at the downloads page to see latest release version [download](http://githu
 
 ## How to use it
 
-Screencast showing the plugin features [Screencast] (http://www.screencast.com/users/Adagioklez/folders/Jing/media/e2b209a5-fe6e-4109-a2ce-1f806f1edf95)
+Screencast showing the plugin features [Screencast](http://www.screencast.com/users/Adagioklez/folders/Jing/media/e2b209a5-fe6e-4109-a2ce-1f806f1edf95)
 
 Im currently planning to show its usefulness when using it for Lift development. 
 
