@@ -144,20 +144,14 @@ class ScalaSidekickPlugin extends EBPlugin {
       }
       case other => println(other)
     }
-
   }
 
   override def start {
     Navigation.loadIndex()
-
   }
   
   override def stop {
-    /*
-    		try {
-			ClojureShell shell = (ClojureShell) Shell.getShell("Clojure");
-			shell.stop();
-		} catch (Exception e) {}*/
-	}
+    //Should stop scala shell?
+  }
 }
 

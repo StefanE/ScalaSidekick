@@ -22,12 +22,8 @@ object CodeAssist {
     var word = ""
     val file = view.getBuffer.getPath
     var msgToSend: AnyRef = null
-    //val caret = textArea.getCaretPosition()
-    //var word = textArea.getText(caret, (currentCarPos - caret))
 
-    //val dotPos = lineTxt.findIndexOf(c => c == '.')
-    //val lineOffset = view.getTextArea.getLineStartOffset(line)
-    //println("###"+dotPos+"#"+lineOffset+"#"+textArea.getCaretPosition)
+    //Decide if previous words contains a dot, which result in a typecompletion
     textArea.goToPrevWord(true)
     textArea.goToPrevWord(true)
     val txt = textArea.getSelectedText
@@ -36,12 +32,10 @@ object CodeAssist {
     if (txt.contains(".")) {
       val text = textArea.getText(caret - 1, 1)
       if (text == ".") {
-        println("###TEST1")
         textArea.setCaretPosition(caret,false)
         msgToSend = TypeCompletion(file, caret - 1, "", msgID)
       }
       else {
-        println("###TEST2")
         textArea.goToPrevWord(true)
         val curCaret = textArea.getCaretPosition
         word = textArea.getText(curCaret, caret - curCaret)
@@ -50,7 +44,6 @@ object CodeAssist {
       }
     }
     else {
-      println("###TEST3")
       textArea.goToPrevWord(true)
       val curCaret = textArea.getCaretPosition
       word = textArea.getText(curCaret, caret - curCaret)
@@ -73,8 +66,6 @@ object CodeAssist {
   }
 
   def getType(textArea: JEditTextArea, view: View) {
-    //view.getBuffer.autosave
-    //Thread.sleep(300)
     if (view.getBuffer.isDirty)
       GUIUtilities.message(null, "info.save", null)
     else {
@@ -89,7 +80,6 @@ object CodeAssist {
           GUIUtilities.message(null, "info.typeInfo", Type)
         }
       }
-
       ClientSender ! TypeAtPoint(file, currentCarPos, id)
     }
   }

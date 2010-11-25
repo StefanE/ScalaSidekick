@@ -55,21 +55,19 @@ object Navigation {
     val msgID = msgCounter()
     
     Global.actions += msgID -> {(list:List[String]) => {
-      //Faa en liste med to elementer prefix og path til fil, gaa hen til den
-       val path = list(0)
-       val offset = list(1).toInt
-       val buffer = jEdit.openFile(view,path)
+      //List with to elements: path to file and offset in file
+      val path = list(0)
+      val offset = list(1).toInt
+      val buffer = jEdit.openFile(view,path)
       try {
         view.getTextArea.setCaretPosition(offset)
       }
       catch {
         case e:NullPointerException => println("NullPointer at GotoDefinition")
       }
-
     } }
     
-    ClientSender ! SymbolAtPoint(path,caret,msgID)
-    
+    ClientSender ! SymbolAtPoint(path,caret,msgID)    
   }
 
   def createIndex(view: View) {
@@ -124,15 +122,10 @@ object Navigation {
     val writer =  new BufferedWriter(new FileWriter(dirName + File.separator + INDEXFILENAME))
 
     for (node <- index) {
-      println("TEST:" + node)
       writer.write(node + "\\n")
       writer.flush()
-
     }
-
     writer.close
-
-    //Look into SIndex to see how I save on disk there
   }
 
   def loadIndex() {
@@ -149,7 +142,6 @@ object Navigation {
         val parts = reader.readLine().split(';')
         index ::= IndexEntry(parts(0),parts(1),parts(2),parts(3).toInt)
       }
-
       reader.close
     }
   }

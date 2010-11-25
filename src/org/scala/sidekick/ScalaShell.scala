@@ -34,11 +34,11 @@ class ScalaShell() extends ProcessShell("Scala") {
   }
 
   private def getScalaJars() = {
-    val path = System.getProperty("Scala.Home")
+    val path = System.getProperty("user.home")+"\\.jedit\\jars\\"
     System.getProperties.list(System.out)
     println("###"+path)
-    val lib = path+"/lib/scala-library.jar"
-    val compiler = path+"/lib/scala-compiler.jar"
+    val lib = path+"scala-library.jar"
+    val compiler = path+"scala-compiler.jar"
     lib+";"+compiler
   }
 
