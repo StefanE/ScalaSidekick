@@ -31,7 +31,7 @@ object Refactoring {
       val msgID = ScalaSidekickPlugin.msgCounter
 
       Global.actions += msgID -> {
-        (_: List[String]) => {
+        (_: Any) => {
           buffer.reload(view)
         }
       }
@@ -53,7 +53,7 @@ object Refactoring {
       val procId = ScalaSidekickPlugin.procCounter
 
       Global.actions += msgId -> {
-        (_: List[String]) => {
+        (_: Any) => {
           view.getBuffer.reload(view)
         }
       }

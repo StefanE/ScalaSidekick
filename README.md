@@ -22,6 +22,7 @@ Look at the downloads page to see latest release version [download](http://githu
 
 ### Misc
 - Exact navigation (Enter name on class,object or trait). Should be improved to look more like the plugin OpenIt.
+- Scala REPL
 
 ##Current work
 - Using a customized [Ensime Server](http://github.com/aemoncannon/ensime) as backend, a lot of stuff can be reused. If it is a success a lot of the planned features will be included in this implementation
@@ -29,7 +30,6 @@ Look at the downloads page to see latest release version [download](http://githu
 
 ##Known problems (Should be moved to issues)
 - Problems with autocompletion of imports...
-- Completion dont filter when user types characters
 - Index should be optimized
 
 ##Planned
@@ -51,8 +51,4 @@ Look at the downloads page to see latest release version [download](http://githu
 
 ## How to use it
 
-Screencast showing the plugin features [Screencast](http://www.screencast.com/users/Adagioklez/folders/Jing/media/e2b209a5-fe6e-4109-a2ce-1f806f1edf95)
-
-Im currently planning to show its usefulness when using it for Lift development. 
-
-More will be added later
+Here is the guide, and a link to a screencast (Guide)[http://groups.google.com/group/liftweb/browse_thread/thread/3e66b5a0b2791879]

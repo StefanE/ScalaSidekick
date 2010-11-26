@@ -28,46 +28,51 @@ object Navigation {
   def navigateTo(view: View) {
     createIndex(view)
 
-    val request = GUIUtilities.input(null,"info.goto",null)
+    val request = GUIUtilities.input(null, "info.goto", null)
     val elemList = index.filter(e => e.name == request)
-    if(!elemList.isEmpty) {
+    if (!elemList.isEmpty) {
       val goto = elemList(0)
-      val buffer = jEdit.openFile(view,goto.path)
-      try {
-        val offset = view.getTextArea.getLineStartOffset(goto.line-1)
+      val buffer = jEdit.openFile(view, goto.path)
+      try
+      {
+        val offset = view.getTextArea.getLineStartOffset(goto.line - 1)
         view.getTextArea.setCaretPosition(offset)
       }
       catch {
-        case e:NullPointerException => println("NullPointer at GotoDefinition")
+        case e: NullPointerException => println("NullPointer at GotoDefinition")
       }
     }
     else {
-      GUIUtilities.message(null,"info.goto.unknown",null)
+      GUIUtilities.message(null, "info.goto.unknown", null)
     }
 
   }
-  
+
   def gotoDefinition(textArea: JEditTextArea, view: View) {
-    setCurrent(textArea,view)
+    setCurrent(textArea, view)
     val buffer = view.getBuffer
     val path = buffer.getPath
     val caret = textArea.getCaretPosition()
     val msgID = msgCounter()
-    
-    Global.actions += msgID -> {(list:List[String]) => {
-      //List with to elements: path to file and offset in file
-      val path = list(0)
-      val offset = list(1).toInt
-      val buffer = jEdit.openFile(view,path)
-      try {
-        view.getTextArea.setCaretPosition(offset)
+
+    Global.actions += msgID -> {
+      (any: Any) => any match {
+        case list: List[String] => {
+          //List with to elements: path to file and offset in file
+          val path = list(0)
+          val offset = list(1).toInt
+          val buffer = jEdit.openFile(view, path)
+          try
+          {
+            view.getTextArea.setCaretPosition(offset)
+          }
+          catch {
+            case e: NullPointerException => println("NullPointer at GotoDefinition")
+          }
+        }
       }
-      catch {
-        case e:NullPointerException => println("NullPointer at GotoDefinition")
-      }
-    } }
-    
-    ClientSender ! SymbolAtPoint(path,caret,msgID)    
+    }
+    ClientSender ! SymbolAtPoint(path, caret, msgID)
   }
 
   def createIndex(view: View) {
@@ -115,11 +120,11 @@ object Navigation {
     if (!indexdir.exists)
       indexdir.mkdirs
 
-    var f =  new File(dirName + File.separator + INDEXFILENAME)
+    var f = new File(dirName + File.separator + INDEXFILENAME)
     if (f.exists && f.canWrite) f.delete
     f.createNewFile
 
-    val writer =  new BufferedWriter(new FileWriter(dirName + File.separator + INDEXFILENAME))
+    val writer = new BufferedWriter(new FileWriter(dirName + File.separator + INDEXFILENAME))
 
     for (node <- index) {
       writer.write(node + "\\n")
@@ -135,12 +140,12 @@ object Navigation {
 
     var f = new File(dirName + File.separator + INDEXFILENAME)
     if (f.exists && f.canRead) {
-      val reader =  new BufferedReader(new FileReader(dirName + File.separator + INDEXFILENAME))
+      val reader = new BufferedReader(new FileReader(dirName + File.separator + INDEXFILENAME))
 
       for (node <- index) {
         println("TEST:" + node)
         val parts = reader.readLine().split(';')
-        index ::= IndexEntry(parts(0),parts(1),parts(2),parts(3).toInt)
+        index ::= IndexEntry(parts(0), parts(1), parts(2), parts(3).toInt)
       }
       reader.close
     }
@@ -150,7 +155,7 @@ object Navigation {
     //Later remove duplicate code
   }
 
-  private def setCurrent(editor: JEditTextArea, view:View) {
+  private def setCurrent(editor: JEditTextArea, view: View) {
     Global.currentView = view
     Global.currentBuffer = view.getBuffer
   }

@@ -182,7 +182,7 @@ trait ScalaProtocol extends Protocol {
 
   def toWF(value: PackageMemberInfoLight): WireFormat = null
 
-  def toWF(notelist: NoteList): WireFormat = null
+  def toWF(notelist: NoteList): WireFormat = TypeCheckResult(notelist.full,notelist.notes)
 
   def toWF(config: ProjectConfig): WireFormat  = null
 }

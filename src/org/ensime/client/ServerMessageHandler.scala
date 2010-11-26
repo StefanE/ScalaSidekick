@@ -80,6 +80,9 @@ object ServerMessageHandler extends Actor {
                 }
 
               }
+              case e:TypeCheckResult => {
+                action(e)
+              }
               case BooleanMsg(value) => {
                 action(null)
               }
@@ -87,7 +90,7 @@ object ServerMessageHandler extends Actor {
                 val id = ScalaSidekickPlugin.msgCounter
 
                 Global.actions += id -> {
-                  (_: List[String]) => action(null)
+                  (_: Any) => action(null)
                 }
                 handleRefactoring(value, id)
               }

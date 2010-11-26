@@ -13,6 +13,7 @@ import org.ensime.protocol.message.{TypecheckFile, TypeAtPoint, ScopeCompletion,
 
 object CodeAssist {
   def complete(textArea: JEditTextArea, view: View) {
+    println("Complete")
     //TODO: Make some kind og save, else user should do it manually
     val msgID = msgCounter()
 
@@ -32,14 +33,14 @@ object CodeAssist {
     if (txt.contains(".")) {
       val text = textArea.getText(caret - 1, 1)
       if (text == ".") {
-        textArea.setCaretPosition(caret,false)
+        textArea.setCaretPosition(caret, false)
         msgToSend = TypeCompletion(file, caret - 1, "", msgID)
       }
       else {
         textArea.goToPrevWord(true)
         val curCaret = textArea.getCaretPosition
         word = textArea.getText(curCaret, caret - curCaret)
-        textArea.setCaretPosition(caret,true)
+        textArea.setCaretPosition(caret, true)
         msgToSend = TypeCompletion(file, curCaret - 1, word, msgID)
       }
     }
@@ -47,19 +48,27 @@ object CodeAssist {
       textArea.goToPrevWord(true)
       val curCaret = textArea.getCaretPosition
       word = textArea.getText(curCaret, caret - curCaret)
-      textArea.setCaretPosition(caret,true)
+      textArea.setCaretPosition(caret, true)
       msgToSend = ScopeCompletion(file, curCaret, word, false, msgID)
     }
 
+    println("Test1")
     //executes when answer returns
     Global.actions += msgID -> {
-      (list: List[String]) => {
-        val pos = textArea.getLocationOnScreen
-        val relpos = textArea.offsetToXY(caret)
-        val position = new Point((pos.getX + relpos.getX + 40).toInt, (pos.getY + relpos.getY).toInt)
-        val options = new Options(view.getTextArea, list)
-        val completion = new CodeCompletion(view, position, list, word)
-        completion.reset(options, true)
+      any: Any => {
+        any match {
+          case list: List[String] => {
+            println("Test22")
+            val pos = textArea.getLocationOnScreen
+            val relpos = textArea.offsetToXY(caret)
+            val position = new Point((pos.getX + relpos.getX + 40).toInt, (pos.getY + relpos.getY).toInt)
+            val options = new Options(view.getTextArea, list)
+            val completion = new CodeCompletion(view, position, list, word)
+            completion.reset(options, true)
+
+          }
+          case other => println("WTF" + other)
+        }
       }
     }
     ClientSender ! msgToSend
@@ -74,10 +83,14 @@ object CodeAssist {
       val id = msgCounter()
 
       Global.actions += id -> {
-        (list: List[String]) => {
-          val Type = Array[AnyRef](list(0))
-          //TODO: Should show in a nicer way
-          GUIUtilities.message(null, "info.typeInfo", Type)
+        (any: Any) => {
+          any match {
+            case list: List[String] => {
+              val Type = Array[AnyRef](list(0))
+              //TODO: Should show in a nicer way
+              GUIUtilities.message(null, "info.typeInfo", Type)
+            }
+          }
         }
       }
       ClientSender ! TypeAtPoint(file, currentCarPos, id)

@@ -19,7 +19,7 @@ object Reformat {
         val path = view.getBuffer.getPath
         val msgID = ScalaSidekickPlugin.msgCounter()
         Global.actions += msgID -> {
-          (_: List[String]) => {
+          (_: Any) => {
 
             view.getBuffer.reload(view)
 

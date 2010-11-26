@@ -33,14 +33,19 @@ object ScalaSidekickPlugin {
     MSGID
   }
 
-  def initProject(view: View) = {
-    var projectPath = ProjectViewer.getActiveProject(view).getRootPath
+  def initProject(view: View) {
+    var project = ProjectViewer.getActiveProject(view)
+    if (project == null) {
+      GUIUtilities.message(null, "error.ProjectViewer", null)
+      return
+    }
+    var projectPath = project.getRootPath
     Global.typeCheck = true
     if (Global.initialized) {
       Global.initialized = false
       clearErrors
       ClientSender ! InitProject("c:/Users/Stefan/Desktop/emacs-23.2/dist", "", "sbt", projectPath, msgCounter())
-      GUIUtilities.message(null, "info.restarting", null)      
+      GUIUtilities.message(null, "info.restarting", null)
     }
     else {
       ClientReceiver.start
@@ -96,7 +101,37 @@ object ScalaSidekickPlugin {
   def typeCheckProject(textArea: JEditTextArea, view: View) {
     clearErrors()
     Global.typeCheck = true
-    ClientSender ! TypecheckAll(msgCounter())
+    val msgID = msgCounter()
+
+    Global.actions += msgID -> {
+      any: Any => {
+        any match {
+          case result: TypeCheckResult => {
+            val errors = new DefaultErrorSource("ProjectErrors")
+            val notes = result.notes
+            notes.foreach(note => {
+              if (note.severity != 0) {
+                val msg = note.msg
+                val start = note.beg
+                val length = note.end - start
+                val line = note.line
+                val path = note.file
+                val severity =
+                  if (note.severity == 2) ErrorSource.ERROR
+                  else ErrorSource.WARNING
+                errors.addError(severity, path, line - 1, start, 0, msg)
+              }
+            })
+            if (Global.typeCheck)
+              ErrorSource.registerErrorSource(errors)
+
+            Global.typeCheck = false
+          }
+        }
+      }
+    }
+
+    ClientSender ! TypecheckAll(msgID)
   }
 
   def Initialized(view: View) = {
@@ -140,7 +175,7 @@ class ScalaSidekickPlugin extends EBPlugin {
           //ScalaSidekickPlugin.clearErrors()
           ClientSender ! TypecheckFile(path, ScalaSidekickPlugin.msgCounter())
         }
-         
+
       }
       case other => println(other)
     }
@@ -149,7 +184,7 @@ class ScalaSidekickPlugin extends EBPlugin {
   override def start {
     Navigation.loadIndex()
   }
-  
+
   override def stop {
     //Should stop scala shell?
   }

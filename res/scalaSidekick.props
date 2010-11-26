@@ -63,6 +63,8 @@ info.save.message=You need to save before using Ensime
 info.init.confirm.title=Confirm project path
 info.init.confirm.message=Project will be initialized with the following path. Change if you want another path.
 
+error.ProjectViewer.title=ProjectViewer not active
+error.ProjectViewer.message=You need to create a project with projectviewer
 
 error.noSBT.title=No SBT
 error.noSBT.message=ProjectViewer project is not a SBT project error: "{0}"

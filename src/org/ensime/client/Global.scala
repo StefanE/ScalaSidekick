@@ -7,6 +7,6 @@ object Global {
   var currentView: View = _
   var currentBuffer:Buffer = _
   var initialized = false
-  val actions: HashMap[Int,Function1[List[String],Unit]] = HashMap()
+  val actions: HashMap[Int,Function1[Any,Unit]] = HashMap()
   var typeCheck = false
 }
